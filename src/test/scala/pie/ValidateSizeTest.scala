@@ -5,7 +5,7 @@ import weaver.SimpleIOSuite
 object ValidateSizeTest extends SimpleIOSuite {
 
   pureTest("An input size of 12 evaluates to a 12-inch pizza") {
-    unimplemented
+    expect(PizzaShop.validateSize(12) == Right(Pizza(12, Tomato)))
   }
 
   pureTest("""An input size of "ten" fails to compile""") {
@@ -17,15 +17,15 @@ object ValidateSizeTest extends SimpleIOSuite {
   }
 
   pureTest("An input size of -1 evaluates to a NegativeSize error") {
-    unimplemented
+    expect(PizzaShop.validateSize(-1) == Left(NegativeSize))
   }
 
   pureTest("An input size of 17 evaluates to a PizzaTooBig error") {
-    unimplemented
+    expect(PizzaShop.validateSize(17) == Left(PizzaTooBig))
   }
 
   pureTest("An input size of 2 evaluates to a PizzaTooSmall error") {
-    unimplemented
+    expect(PizzaShop.validateSize(2) == Left(PizzaTooSmall))
   }
 }
 
