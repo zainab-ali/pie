@@ -62,21 +62,24 @@ object PizzaShop {
     }
   }
 
+  val oliveImage: Image = ???
 
+  def olivesToImage(size: Int, n: Int): Image = n match {
+    case 0 => ???
+    case n => ???
+  }
+
+  def sauceToImage(size: Int, sauce: Sauce): Image = ???
+
+  def pizzaToImage(pizza: Pizza): Image = ???
 
   def main(args: Array[String]): Unit = {
-    val pizzaSize = args(0).toInt * 10
+    val eitherPizzaOrError: Either[NonEmptyList[PizzaError], Pizza] = ???
 
-    val base = Image.circle(pizzaSize)
-      .fillColor(Color.beige)
-    val sauce = base.scale(0.75, 0.75)
-      .fillColor(Color.red)
-    val olive = Image.circle(10)
-      .fillColor(Color.green)
-
-    val image = olive.on(sauce).on(base)
-
-    image.draw()
+    eitherPizzaOrError match {
+      case Right(pizza) => pizzaToImage(pizza).draw()
+      case Left(errors) => println(s"Couldn't make pizza. There were errors: $errors")
+    }
   }
 }
 

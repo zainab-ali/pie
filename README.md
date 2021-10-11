@@ -50,3 +50,51 @@ Write a function `validateSauce` that:
  - evaluates to either `Bechamel`, `Tomato` or a `StrangeSauce` error
 
 Use a `Validated` to evaluate both `vaildateSize` and `validateSauce`.
+
+## Structural recursion
+
+1. Write a `sauceToImage` function that evaluates to an image. The image
+ - should be a circle, three quarters the diameter of the base (7.5 times the pizza size)
+ - should be red if the sauce is `Tomato`
+ - should be white if the sauce is `Bechamel`
+
+```
+def sauceToImage(size: Int, sauce: Sauce): Image = ???
+```
+
+It should look like this:
+
+Write a `oliveImage` value that evaluates to an image. The image
+ - should be a circle of diameter 10
+ - should be green
+
+```
+val oliveImage: Image = ???
+```
+
+
+Write a `pizzaToImage` function that evaluates to an image. The image
+ - should contain a base. This is a beige circle of 10 times the given pizza `size` 
+ - should have the sauce image on top of it (use the `sauceToImage` function you've just written)
+ - should have a single olive on top of it
+ 
+ 
+Use `parseSize`, `validatePizza` and `pizzaToImage` in your `main` method. It should:
+ - draw a valid pizza
+ - print any errors to the console using `println`
+
+### Recursion
+
+Familiarize yourself with Doodle by reading [Creative Scala's Computing With Pictures chapter](https://www.creativescala.org/creative-scala.html#computing-with-pictures). 
+In particular, experiment with `at` and `rotate`.
+
+Write a recursive `olivesToImage` function that:
+ - accepts a size
+ - accepts a number of olives
+ - evaluates to an image with the given number of olives arranged in a circle over the pizza sauce
+ 
+Use `olivesToImage(size, 4)` in your `pizzaToImage` function to create pizzas with four olives.
+
+Given a size of `12` and a sauce of `"red"`, this should display:
+ 
+![A pizza with four olives](/images/structural-recursion-four-olive-pizza.png "A pizza with four olives")
