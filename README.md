@@ -98,3 +98,28 @@ Use `olivesToImage(size, 4)` in your `pizzaToImage` function to create pizzas wi
 Given a size of `12` and a sauce of `"red"`, this should display:
  
 ![A pizza with four olives](/images/structural-recursion-four-olive-pizza.png "A pizza with four olives")
+
+### Higher order functions
+
+Take a look at the `olivesToImage` function in `Toppings.scala`. It uses recursion by induction to construct an image of olives. The position of the nth olive is calculated using `pointOfNthOlive`.
+
+1. Ham is sprinkled in a spiral.
+ - Write a function `pointOfNthHam` that calculates the point of the nth slice of ham.
+ - A ham slice is a pink square of length 15.
+ - Write a function `hamToImage` that results in a spiral of ham.
+
+2. A handful of sweetcorn is sprinked in a circle.
+ - Write a function `pointOfNthSweetcornInHandful` that calculates the point of the nth sweetcorn in the handful.
+ - A sweetcorn piece is a yellow triangle of width 5 and height 7.
+ - Write a function `sweetcornHandfulToImage` that, given a radius, results in a circle of sweetcorn.
+3. A handful contains up to six pieces of sweetcorn. Handfuls are sprinkled in concentric circles.
+ - Write a function `sweetcornToImage` that results in concentric circles of sweetcorn handfuls
+Given 8 olives, 5 pieces of ham, and 20 pieces of sweetcorn, this should display something like:
+![A pizza with eight olives, five pieces of ham and twenty pieces of sweetcorn](/images/recursion-pizza.png "A pizza with eight olives, five pieces of ham and twenty pieces of sweetcorn")
+
+
+4. Do you notice something similar about `hamToImage`, `oliveToImage` and `sweetcornToImage`?
+Write a function `toppingToImage` that:
+  - accepts an image for a `piece`
+  - accepts a `curve` function that determines the point of the nth piece
+Refactor `hamToImage`, `oliveToImage` and `sweetcornHandfulToImage` to use it

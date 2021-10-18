@@ -62,19 +62,33 @@ object PizzaShop {
     }
   }
 
-  val oliveImage: Image = ???
-
-  def olivesToImage(size: Int, n: Int): Image = n match {
-    case 0 => ???
-    case n => ???
+  def sauceToImage(scale: Int, sauce: Sauce): Image = sauce match {
+    case Tomato => Image.circle(scale * 0.75).fillColor(Color.red).noStroke
+    case Bechamel => Image.circle(scale * 0.75)
+        .fillColor(Color.green).noStroke
   }
 
-  def sauceToImage(size: Int, sauce: Sauce): Image = ???
-
-  def pizzaToImage(pizza: Pizza): Image = ???
+  def pizzaToImage(pizza: Pizza): Image = pizza match {
+    case Pizza(size, sauce) =>
+      val sauceImage = sauceToImage(size, pizza.sauce)
+      val baseImage = Image.circle(size).fillColor(Color.beige)
+      Toppings.sweetcornToImage(size, 20)
+        .on(Toppings.olivesToImage(size, 8))
+        .on(Toppings.hamToImage(size, 5))
+        .on(sauceImage).on(baseImage)
+  }
 
   def main(args: Array[String]): Unit = {
-    val eitherPizzaOrError: Either[NonEmptyList[PizzaError], Pizza] = ???
+    val eitherSizeOrError = parseSize(args(0))
+    // This solution uses only pattern matching.
+    // If you like, experiment with using functions such as `flatMap`
+    val eitherPizzaOrError = eitherSizeOrError match {
+      case Right(size) =>
+        val sauce = args(1)
+        validatePizza(size, sauce)
+      case Left(error) =>
+        Left(NonEmptyList(error, Nil))
+    }
 
     eitherPizzaOrError match {
       case Right(pizza) => pizzaToImage(pizza).draw()
