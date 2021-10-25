@@ -27,26 +27,65 @@ object Toppings {
         extends HandfulOfOlives
   }
 
-  def grabHandfulOfOlives(n: Int): HandfulOfOlives = ???
+  def grabHandfulOfOlives(n: Int): HandfulOfOlives = n match {
+    case 0 => HandfulOfOlives.Empty
+    case n =>
+      HandfulOfOlives.Several(Olive.Kalamata, grabHandfulOfOlives(n - 1))
+  }
 
-  def toNicoise(handful: HandfulOfOlives): HandfulOfOlives = ???
-  def stuffWithPimento(handful: HandfulOfOlives): HandfulOfOlives = ???
+  def toNicoise(handful: HandfulOfOlives): HandfulOfOlives =
+    modifyHandfulOfOlives(handful, _ => Olive.Nicoise)
+  def stuffWithPimento(handful: HandfulOfOlives): HandfulOfOlives =
+    modifyHandfulOfOlives(
+      handful,
+      {
+        case olive @ (Olive.Kalamata | Olive.Nicoise) =>
+          Olive.PimentoStuffed(olive, Pimento)
+        case olive: Olive.PimentoStuffed => olive
+      }
+    )
 
   def modifyHandfulOfOlives(
       handful: HandfulOfOlives,
       f: Olive => Olive
-  ): HandfulOfOlives = ???
+  ): HandfulOfOlives = handful match {
+    case HandfulOfOlives.Empty => HandfulOfOlives.Empty
+    case HandfulOfOlives.Several(olive, rest) =>
+      HandfulOfOlives.Several(f(olive), modifyHandfulOfOlives(rest, f))
+  }
 
-  def addOliveColourToImage(olive: Olive): Image => Image = ???
+  def addOliveColourToImage(olive: Olive): Image => Image = olive match {
+    case Olive.Nicoise  => _.fillColor(Color.green).scale(1.5, 1.5)
+    case Olive.Kalamata => _.fillColor(Color.purple)
+    case Olive.PimentoStuffed(olive, _) =>
+      addOliveColourToImage(olive).andThen(addPimentoToImage)
+  }
 
-  val addPimentoToImage: Image => Image = ???
+  val addPimentoToImage: Image => Image =
+    image => image.scale(0.5, 0.5).fillColor(Color.darkRed).on(image)
 
-  def countOlives(handfulOfOlives: HandfulOfOlives): Int = ???
+  def countOlives(handfulOfOlives: HandfulOfOlives): Int =
+    handfulOfOlives match {
+      case HandfulOfOlives.Empty            => 0
+      case HandfulOfOlives.Several(_, rest) => 1 + countOlives(rest)
+    }
 
   def handfulOfOlivesToImage(
       scale: Int,
       handfulOfOlives: HandfulOfOlives
-  ): Image = ???
+  ): Image = {
+    val total = countOlives(handfulOfOlives)
+    def go(n: Int, handfulOfOlives: HandfulOfOlives): Image = {
+      handfulOfOlives match {
+        case HandfulOfOlives.Empty => Image.empty
+        case HandfulOfOlives.Several(olive, rest) =>
+          val image = go(n + 1, rest)
+          val point = pointOfNthOlive(scale, total, n)
+          image.on(addOliveColourToImage(olive)(oliveImage).at(point))
+      }
+    }
+    go(0, handfulOfOlives)
+  }
 
   def toppingToImage(
       piece: Image,
