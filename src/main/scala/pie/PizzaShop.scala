@@ -72,10 +72,22 @@ object PizzaShop {
     case Pizza(size, sauce) =>
       val sauceImage = sauceToImage(size, pizza.sauce)
       val baseImage = Image.circle(size).fillColor(Color.beige)
-      Toppings.sweetcornToImage(size, 20)
-        .on(Toppings.olivesToImage(size, 8))
+      val handfulOfNicoiseOlives =
+        Toppings.handfulOfOlivesToImage(
+          size,
+          Toppings.stuffWithPimento(
+            Toppings.toNicoise(Toppings.grabHandfulOfOlives(3))
+          )
+        )
+      val handfulOfKalamataOlives =
+        Toppings.handfulOfOlivesToImage(size, Toppings.grabHandfulOfOlives(8))
+      Toppings
+        .sweetcornToImage(size, 20)
+        .on(handfulOfNicoiseOlives)
+        .on(handfulOfKalamataOlives)
         .on(Toppings.hamToImage(size, 5))
-        .on(sauceImage).on(baseImage)
+        .on(sauceImage)
+        .on(baseImage)
   }
 
   def main(args: Array[String]): Unit = {

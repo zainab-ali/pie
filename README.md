@@ -123,3 +123,28 @@ Write a function `toppingToImage` that:
   - accepts an image for a `piece`
   - accepts a `curve` function that determines the point of the nth piece
 Refactor `hamToImage`, `oliveToImage` and `sweetcornHandfulToImage` to use it
+
+### Recap: recursion, induction and higher order functions
+
+Examine the `Olive` and `HandfulOfOlives` algebraic data types in `Toppings.scala`. They have corresponding tests in `HandfulOfOlivesTest`
+
+1. Write a `grabHandfulOfOlives` function that constructs a handful of `Kalamata` olives.
+2. Write the `toNicoise` and `stuffWithPimento` functions. They should use the higher order function `modifyHandfulOfOlives` (you'll need to write this too).
+3. Write an `addPimentoToImage` value that results in a function. The resulting function should add a small red circle to an image.
+   Is there any difference between this value and the following declaration?
+
+   ```scala
+   def addPimentoToImage(image: Image): Image = ???
+   ```
+
+3. Write an `addOliveColourToImage` function that accepts an `olive` and results in a function that colours an image. The resulting function should give:
+ - `Kalamata` olives a colour of purple.
+ - `Nicoise` olives a colour of green and a larger size
+ - `PimentoStuffed` olives a small red circle on top of them using the `addPimentoToImage` function.
+4. Write a `countOlives` function that counts the number of olives in a handful.
+5. Write a `handfulOfOlivesToImage` function that results in an image of olives arranged in a circle.
+   Make use of the `countOlives` function and previous `pointOfNthOlive` function.
+
+Your final pizza should look a bit like this:
+
+![A pizza with pimento-stuffed olives](/images/higher-order-functions-pizza.png "A pizza with pimento stuffed olives")
