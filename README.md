@@ -148,3 +148,9 @@ Examine the `Olive` and `HandfulOfOlives` algebraic data types in `Toppings.scal
 Your final pizza should look a bit like this:
 
 ![A pizza with pimento-stuffed olives](/images/higher-order-functions-pizza.png "A pizza with pimento stuffed olives")
+
+### Generic folds
+
+1. Refresh yourself on folds by writing the `fold` function in `Toppings.scala`.
+2. Use `fold` in `modifyHandfulOfOlives` and `countOlives`. These should no longer use explicit recursion (the recursive call occurs within `fold`).
+3. Use `fold` in `handfulOfOlivesToImage` instead of the nested recursive function. This will require a little more thought.

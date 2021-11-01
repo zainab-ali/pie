@@ -45,6 +45,8 @@ object Toppings {
       }
     )
 
+  def fold[A](handful: HandfulOfOlives, base: A, combine: (Olive, A) => A): A = ???
+
   def modifyHandfulOfOlives(
       handful: HandfulOfOlives,
       f: Olive => Olive
