@@ -45,16 +45,19 @@ object Toppings {
       }
     )
 
-  def fold[A](handful: HandfulOfOlives, base: A, combine: (Olive, A) => A): A = ???
+  def fold[A](handful: HandfulOfOlives, base: A, combine: (Olive, A) => A): A = handful match {
+    case HandfulOfOlives.Empty => base
+    case HandfulOfOlives.Several(olive, rest) => combine(olive, fold(rest, base, combine))
+  }
 
   def modifyHandfulOfOlives(
       handful: HandfulOfOlives,
       f: Olive => Olive
-  ): HandfulOfOlives = handful match {
-    case HandfulOfOlives.Empty => HandfulOfOlives.Empty
-    case HandfulOfOlives.Several(olive, rest) =>
-      HandfulOfOlives.Several(f(olive), modifyHandfulOfOlives(rest, f))
-  }
+  ): HandfulOfOlives =
+    fold[HandfulOfOlives](
+      handful,
+      HandfulOfOlives.Empty,
+      (olive, handful) => HandfulOfOlives.Several(f(olive), handful))
 
   def addOliveColourToImage(olive: Olive): Image => Image = olive match {
     case Olive.Nicoise  => _.fillColor(Color.green).scale(1.5, 1.5)
@@ -67,26 +70,19 @@ object Toppings {
     image => image.scale(0.5, 0.5).fillColor(Color.darkRed).on(image)
 
   def countOlives(handfulOfOlives: HandfulOfOlives): Int =
-    handfulOfOlives match {
-      case HandfulOfOlives.Empty            => 0
-      case HandfulOfOlives.Several(_, rest) => 1 + countOlives(rest)
-    }
+    fold(handfulOfOlives, 0, (_, count) => count + 1)
 
   def handfulOfOlivesToImage(
       scale: Int,
       handfulOfOlives: HandfulOfOlives
   ): Image = {
     val total = countOlives(handfulOfOlives)
-    def go(n: Int, handfulOfOlives: HandfulOfOlives): Image = {
-      handfulOfOlives match {
-        case HandfulOfOlives.Empty => Image.empty
-        case HandfulOfOlives.Several(olive, rest) =>
-          val image = go(n + 1, rest)
+    val (image, count) = fold(handfulOfOlives, (Image.empty, total),  {
+        case (olive, (image, n)) =>
           val point = pointOfNthOlive(scale, total, n)
-          image.on(addOliveColourToImage(olive)(oliveImage).at(point))
-      }
-    }
-    go(0, handfulOfOlives)
+          (image.on(addOliveColourToImage(olive)(oliveImage).at(point)), n - 1)
+      })
+    image
   }
 
   def toppingToImage(
