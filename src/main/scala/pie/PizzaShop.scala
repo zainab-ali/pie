@@ -81,11 +81,13 @@ object PizzaShop {
         )
       val handfulOfKalamataOlives =
         Toppings.handfulOfOlivesToImage(size, Toppings.grabHandfulOfOlives(8))
+      val handfulOfHam =
+        Toppings.handfulOfHamToImage(size, Toppings.grabHandfulOfHam(8))
       Toppings
         .sweetcornToImage(size, 20)
         .on(handfulOfNicoiseOlives)
         .on(handfulOfKalamataOlives)
-        .on(Toppings.hamToImage(size, 5))
+        .on(handfulOfHam)
         .on(sauceImage)
         .on(baseImage)
   }

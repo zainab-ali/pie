@@ -149,8 +149,37 @@ Your final pizza should look a bit like this:
 
 ![A pizza with pimento-stuffed olives](/images/higher-order-functions-pizza.png "A pizza with pimento stuffed olives")
 
+## Generics
+
 ### Generic folds
 
 1. Refresh yourself on folds by writing the `fold` function in `Toppings.scala`.
 2. Use `fold` in `modifyHandfulOfOlives` and `countOlives`. These should no longer use explicit recursion (the recursive call occurs within `fold`).
 3. Use `fold` in `handfulOfOlivesToImage` instead of the nested recursive function. This will require a little more thought.
+
+### Generic algebraic data types
+
+1. Write a `grabHandfulOfHam` function that constructs a handful of a given number of ham pieces. This function is used in `PizzaShop.scala`.
+2. Take a look at `handfulOfHamToImage` It uses the functions `countHandful` and `foldHandful`.
+   Write the signatures and definitions for these functions. `foldHandful` is the only function that should recurse.
+3. Check that you can now compile and run the application.
+4. We'll now do some refactoring.
+   - Delete the `HandfulOfOlives` trait and use the following type alias:
+
+     ```scala
+     type HandfulOfOlives = Handful[Olive]
+     ```
+   - Delete the `countOlives` function and replace its usages with `countHandful`.
+   - Delete the `fold` function and replace its usages with `foldHandful`.
+   - Rewrite the `grabHandfulOfOlives` function to construct a `Handful[Olive]`.
+
+   Check that your code compiles once again.
+
+5. Examine `grabHandfulOfHam` and `grabHandfulOfOlives`. Do these have any shared code?
+   Write a function `grabHandful` that grabs a generic handful.
+
+6. Examine `modifyHandfulOfOlives`. Does this use any properties of `Olive`?
+   Write a function `modifyHandful` that modifies a generic handful.
+
+7. Finally, examime `handfulOfHamToImage` and `handfulOfOlivesToImage`. Do these have any shared code?
+   Write a function `handfulToImage` that constructs an image from a generic handful.

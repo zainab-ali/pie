@@ -27,11 +27,25 @@ object Toppings {
         extends HandfulOfOlives
   }
 
+  case object Ham
+
+  sealed trait Handful[A]
+
+  object Handful {
+    case class Empty[A]() extends Handful[A]
+    case class Several[A](first: A, rest: Handful[A]) extends Handful[A]
+  }
+
+  // type HandfulOfOlives = Handful[Olive]
+
   def grabHandfulOfOlives(n: Int): HandfulOfOlives = n match {
     case 0 => HandfulOfOlives.Empty
     case n =>
       HandfulOfOlives.Several(Olive.Kalamata, grabHandfulOfOlives(n - 1))
   }
+
+  def grabHandfulOfHam(n: Int): Handful[Ham.type] = ???
+
 
   def toNicoise(handful: HandfulOfOlives): HandfulOfOlives =
     modifyHandfulOfOlives(handful, _ => Olive.Nicoise)
@@ -82,6 +96,22 @@ object Toppings {
           val point = pointOfNthOlive(scale, total, n)
           (image.on(addOliveColourToImage(olive)(oliveImage).at(point)), n - 1)
       })
+    image
+  }
+
+  def handfulOfHamToImage(
+      scale: Int,
+      handfulOfHam: Handful[Ham.type]
+  ): Image = {
+    val total = countHandful(handfulOfHam)
+    val (image, count) = foldHandful(
+      handfulOfHam,
+      (Image.empty, total),
+      { case (_, (image, n)) =>
+        val point = pointOfNthHam(scale, total, n)
+        (image.on(hamImage.at(point)), n - 1)
+      }
+    )
     image
   }
 
