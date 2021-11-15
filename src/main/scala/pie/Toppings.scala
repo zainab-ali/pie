@@ -19,14 +19,6 @@ object Toppings {
     case class PimentoStuffed(olive: Olive, pimento: Pimento.type) extends Olive
   }
 
-  // A handful of olives is either empty, or a single olive and another handful
-  sealed trait HandfulOfOlives
-  object HandfulOfOlives {
-    case object Empty extends HandfulOfOlives
-    case class Several(olive: Olive, rest: HandfulOfOlives)
-        extends HandfulOfOlives
-  }
-
   case object Ham
 
   sealed trait Handful[A]
@@ -36,21 +28,27 @@ object Toppings {
     case class Several[A](first: A, rest: Handful[A]) extends Handful[A]
   }
 
-  // type HandfulOfOlives = Handful[Olive]
+  type HandfulOfOlives = Handful[Olive]
 
-  def grabHandfulOfOlives(n: Int): HandfulOfOlives = n match {
-    case 0 => HandfulOfOlives.Empty
+  val handfulOfHam: Handful[Ham.type] =
+    Handful.Several(Ham, Handful.Several(Ham, Handful.Empty()))
+
+  def grabHandful[A](n: Int, first: A): Handful[A] = n match {
+    case 0 => Handful.Empty()
     case n =>
-      HandfulOfOlives.Several(Olive.Kalamata, grabHandfulOfOlives(n - 1))
+      Handful.Several(first, grabHandful(n - 1, first))
   }
 
-  def grabHandfulOfHam(n: Int): Handful[Ham.type] = ???
+  def grabHandfulOfHam(n: Int): Handful[Ham.type] =
+    grabHandful(n, Ham)
 
+  def grabHandfulOfOlives(n: Int): HandfulOfOlives =
+    grabHandful(n, Olive.Kalamata)
 
   def toNicoise(handful: HandfulOfOlives): HandfulOfOlives =
-    modifyHandfulOfOlives(handful, _ => Olive.Nicoise)
+    modifyHandful(handful, _ => Olive.Nicoise)
   def stuffWithPimento(handful: HandfulOfOlives): HandfulOfOlives =
-    modifyHandfulOfOlives(
+    modifyHandful(
       handful,
       {
         case olive @ (Olive.Kalamata | Olive.Nicoise) =>
@@ -59,19 +57,30 @@ object Toppings {
       }
     )
 
-  def fold[A](handful: HandfulOfOlives, base: A, combine: (Olive, A) => A): A = handful match {
-    case HandfulOfOlives.Empty => base
-    case HandfulOfOlives.Several(olive, rest) => combine(olive, fold(rest, base, combine))
+  def foldHandful[A, B](
+      handful: Handful[A],
+      base: B,
+      combine: (A, B) => B
+  ): B = {
+    handful match {
+      case Handful.Empty() => base
+      case Handful.Several(first, rest) =>
+        combine(first, foldHandful(rest, base, combine))
+    }
   }
 
-  def modifyHandfulOfOlives(
-      handful: HandfulOfOlives,
-      f: Olive => Olive
-  ): HandfulOfOlives =
-    fold[HandfulOfOlives](
+  def countHandful[A](handful: Handful[A]): Int =
+    foldHandful(handful, 0, (_, count) => count + 1)
+
+  def modifyHandful[A](
+      handful: Handful[A],
+      f: A => A
+  ): Handful[A] =
+    foldHandful[A, Handful[A]](
       handful,
-      HandfulOfOlives.Empty,
-      (olive, handful) => HandfulOfOlives.Several(f(olive), handful))
+      Handful.Empty(),
+      (first, handful) => Handful.Several(f(first), handful)
+    )
 
   def addOliveColourToImage(olive: Olive): Image => Image = olive match {
     case Olive.Nicoise  => _.fillColor(Color.green).scale(1.5, 1.5)
@@ -83,37 +92,40 @@ object Toppings {
   val addPimentoToImage: Image => Image =
     image => image.scale(0.5, 0.5).fillColor(Color.darkRed).on(image)
 
-  def countOlives(handfulOfOlives: HandfulOfOlives): Int =
-    fold(handfulOfOlives, 0, (_, count) => count + 1)
-
   def handfulOfOlivesToImage(
       scale: Int,
       handfulOfOlives: HandfulOfOlives
+  ): Image =
+    handfulToImage(
+      scale,
+      handfulOfOlives,
+      olive => addOliveColourToImage(olive)(oliveImage),
+      pointOfNthOlive
+    )
+
+  def handfulToImage[A](
+      scale: Int,
+      handful: Handful[A],
+      pieceImage: A => Image,
+      curve: (Int, Int, Int) => Point
   ): Image = {
-    val total = countOlives(handfulOfOlives)
-    val (image, count) = fold(handfulOfOlives, (Image.empty, total),  {
-        case (olive, (image, n)) =>
-          val point = pointOfNthOlive(scale, total, n)
-          (image.on(addOliveColourToImage(olive)(oliveImage).at(point)), n - 1)
-      })
+    val total = countHandful(handful)
+    val (image, count) = foldHandful(
+      handful,
+      (Image.empty, total),
+      { case (piece, (image, n)) =>
+        val point = curve(scale, total, n)
+        (image.on(pieceImage(piece).at(point)), n - 1)
+      }
+    )
     image
   }
 
   def handfulOfHamToImage(
       scale: Int,
       handfulOfHam: Handful[Ham.type]
-  ): Image = {
-    val total = countHandful(handfulOfHam)
-    val (image, count) = foldHandful(
-      handfulOfHam,
-      (Image.empty, total),
-      { case (_, (image, n)) =>
-        val point = pointOfNthHam(scale, total, n)
-        (image.on(hamImage.at(point)), n - 1)
-      }
-    )
-    image
-  }
+  ): Image =
+    handfulToImage(scale, handfulOfHam, _ => hamImage, pointOfNthHam)
 
   def toppingToImage(
       piece: Image,
