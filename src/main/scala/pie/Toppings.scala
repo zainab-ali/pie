@@ -9,8 +9,10 @@ object Toppings {
 
   object Pimento
 
+  sealed trait Topping
+
   // An olive is either Nicoise, Kalamata or an olive stuffed with Pimento
-  sealed trait Olive
+  sealed trait Olive extends Topping
 
   object Olive {
     case object Nicoise extends Olive
@@ -19,7 +21,54 @@ object Toppings {
     case class PimentoStuffed(olive: Olive, pimento: Pimento.type) extends Olive
   }
 
-  case object Ham
+  case object Ham extends Topping
+
+  def modifyTheTopping(f: Topping => Topping): Topping = {
+    val olive = Olive.Kalamata
+    f(olive)
+  }
+
+  def modifyTheOlive(f: Olive => Topping): Topping = {
+    val olive = Olive.Kalamata
+    f(olive)
+  }
+
+  def olivefyTheTopping(f: Topping => Olive): Topping = {
+    val olive = Olive.Kalamata
+    f(olive)
+  }
+
+  val exchangeTopping: Topping => Topping = {
+     case o: Olive => Ham
+     case Ham => Olive.Kalamata
+  }
+
+  val exchangeToppingForOlive: Topping => Olive = {
+    _ => Olive.Kalamata
+  }
+
+  val exchangeOliveForTopping: Olive => Topping = {
+    case Olive.Kalamata => Ham
+    case o: Olive => o
+  }
+
+  // Question 1
+  // modifyTheTopping(exchangeTopping)
+  // modifyTheTopping(exchangeToppingForOlive)
+  // modifyTheTopping(exchangeOliveForTopping)
+
+
+  // Question 2
+  // modifyTheOlive(exchangeTopping)
+  // modifyTheOlive(exchangeToppingForOlive)
+  // modifyTheOlive(exchangeOliveForTopping)
+
+  // Question 3
+  // olivefyTheTopping(exchangeTopping)
+  // olivefyTheTopping(exchangeToppingForOlive)
+  // olivefyTheTopping(exchangeOliveForTopping)
+
+
 
   sealed trait Handful[A]
 

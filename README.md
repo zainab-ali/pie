@@ -183,3 +183,45 @@ Your final pizza should look a bit like this:
 
 7. Finally, examime `handfulOfHamToImage` and `handfulOfOlivesToImage`. Do these have any shared code?
    Write a function `handfulToImage` that constructs an image from a generic handful.
+
+
+## Variance
+
+Take a look at the functions `modifyTheTopping`, `modifyTheOlive` and `olivefyTheTopping`. We'll pass these the functions `exchangeTopping`, `exchangeToppingForOlive` and `exchangeOliveForTopping`.
+
+1. Which of these calls will compile? If so, what will their result be? (Try and predict the result before uncommenting the lines).
+
+   ```scala
+   modifyTheTopping(exchangeTopping)
+   modifyTheTopping(exchangeToppingForOlive)
+   modifyTheTopping(exchangeOliveForTopping)
+   ```
+
+   `Olive` is a subtype of `Topping`. What is the relationship between the type `Topping => Topping` and the type `Topping => Olive` (is one a subtype of the other)?
+
+2. Which of these will compile? If so, what will their result be?
+
+   ```scala
+   modifyTheOlive(exchangeTopping)
+   modifyTheOlive(exchangeToppingForOlive)
+   modifyTheOlive(exchangeOliveForTopping)
+   ```
+
+   What is the relationship between `Topping => Topping` and `Olive => Topping`?
+
+3. Now consider `olivefyTheTopping`. Which of these will compile? If so, what will their result be?
+
+   ```scala
+   olivefyTheTopping(exchangeTopping)
+   olivefyTheTopping(exchangeToppingForOlive)
+   olivefyTheTopping(exchangeOliveForTopping)
+   ```
+
+   What is the relationship between `Topping => Topping` and `Topping => Olive`?
+
+4. The type `Olive => Topping` is a type alias for `Function1[Olive, Topping]`. The type `Function1` is a type constructor with two parameters: `Function1[I, O],` where `I` is the input parameter and `O` is the output result.
+
+   - Read the definitions of invariance, covariance and contravariance in [Essential Scala](https://books.underscore.io/essential-scala/essential-scala.html#invariance-covariance-and-contravariance).
+
+   - Consider the relationship between `Function1[Topping, Topping]`, `Function1[Olive, Topping]` and `Function1[Topping, Olive]`.
+     Is `Function1` covariant or contravariant in `I`? Is it covariant or contravariant in `O`?
