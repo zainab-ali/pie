@@ -225,3 +225,30 @@ Take a look at the functions `modifyTheTopping`, `modifyTheOlive` and `olivefyTh
 
    - Consider the relationship between `Function1[Topping, Topping]`, `Function1[Olive, Topping]` and `Function1[Topping, Olive]`.
      Is `Function1` covariant or contravariant in `I`? Is it covariant or contravariant in `O`?
+
+
+## Collections
+
+An olive can be sliced into slices. Each slice has all the properties of its olive and is defined as:
+
+```scala
+case class OliveSlice(olive: Olive)
+```
+
+1. Write a function `sliceOlive` that slices an olive into a handful of three pieces:
+
+2. Now write a function `sliceHandfulOfOlives` that slices a handful of olives and produces a handful of slices.
+   You can use the `foldHandful` function to implement it.
+
+3. A slice of ham can be sliced into more ham.
+
+   a. Write a function `sliceHam` that slices a `Ham` into three pieces of `Ham`.
+   b. Now write a function `sliceHandfulOfHam` that slices a handful of `Ham`.
+
+4. What are the similarities betweeen `sliceHandfulOfHam` and `sliceHandfulOfOlives`? Write a generic `sliceHandful` function to share those similarities.
+
+5. Write a function `combineOlivesAndHam` that combines a handful of olives and a handful of ham into a handful of toppings.
+   Use the `foldHandful` function to implement it. Do you need to consider the variance of `Handful`?
+
+6. Can you write a generic `combineHandfuls` function that combines a handful of one type with a handful of a different type?
+   If so, what would its signature be?

@@ -131,6 +131,18 @@ object Toppings {
       (first, handful) => Handful.Several(f(first), handful)
     )
 
+  case class OliveSlice(olive: Olive)
+
+  def sliceOlive(olive: Olive): Handful[OliveSlice] = ???
+
+  def sliceHandfulOfOlives(handful: Handful[Olive]): Handful[OliveSlice] = ???
+
+  def sliceHam(ham: Ham.type): Handful[Ham.type] = ???
+
+  def sliceHandfulOfHam(handful: Handful[Ham.type]): Handful[Ham.type] = ???
+
+  def combineOlivesAndHam(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[Topping] = ???
+
   def addOliveColourToImage(olive: Olive): Image => Image = olive match {
     case Olive.Nicoise  => _.fillColor(Color.green).scale(1.5, 1.5)
     case Olive.Kalamata => _.fillColor(Color.purple)
