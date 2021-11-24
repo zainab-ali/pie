@@ -70,7 +70,7 @@ object Toppings {
 
 
 
-  sealed trait Handful[A]
+  sealed trait Handful[+A]
 
   object Handful {
     case class Empty[A]() extends Handful[A]
@@ -133,15 +133,71 @@ object Toppings {
 
   case class OliveSlice(olive: Olive)
 
-  def sliceOlive(olive: Olive): Handful[OliveSlice] = ???
+  def sliceOlive(olive: Olive): Handful[OliveSlice] = {
+    grabHandful(3, OliveSlice(olive))
+  }
 
-  def sliceHandfulOfOlives(handful: Handful[Olive]): Handful[OliveSlice] = ???
+  def sliceHandfulOfOlives(handful: Handful[Olive]): Handful[OliveSlice] =
+    foldHandful[Olive, Handful[OliveSlice]](
+      handful,
+      Handful.Empty(),
+      (olive, handful) => {
+        val slices = sliceOlive(olive)
+        foldHandful[OliveSlice, Handful[OliveSlice]](
+          slices,
+          handful,
+          (slice, handful) => Handful.Several(slice, handful)
+        )
+      }
+    )
 
-  def sliceHam(ham: Ham.type): Handful[Ham.type] = ???
+  def sliceHam(ham: Ham.type): Handful[Ham.type] =
+    grabHandful(3, ham)
 
-  def sliceHandfulOfHam(handful: Handful[Ham.type]): Handful[Ham.type] = ???
+  def sliceHandfulOfHam(handful: Handful[Ham.type]): Handful[Ham.type] =
+    foldHandful[Ham.type, Handful[Ham.type]](
+      handful,
+      Handful.Empty(),
+      (ham, handful) => {
+        val slices = sliceHam(ham)
+        foldHandful[Ham.type, Handful[Ham.type]](
+          slices,
+          handful,
+          (slice, handful) => Handful.Several(slice, handful)
+        )
+      }
+    )
 
-  def combineOlivesAndHam(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[Topping] = ???
+  def sliceHandful[A, B](handful: Handful[A], f: A => Handful[B]): Handful[B] =
+    foldHandful[A, Handful[B]](
+      handful,
+      Handful.Empty(),
+      (a, handful) => {
+        val bs = f(a)
+        foldHandful[B, Handful[B]](
+          bs,
+          handful,
+          (b, handful) => Handful.Several(b, handful)
+        )
+      }
+    )
+
+
+  def combineOlivesAndHam(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[Topping] = {
+    foldHandful[Topping, Handful[Topping]](
+      olives,
+      hams,
+      (olive, handful) => Handful.Several(olive, handful)
+    )
+  }
+
+  def combineHandfuls[A](first: Handful[A], second: Handful[A]): Handful[A] = {
+    foldHandful[A, Handful[A]](
+      first,
+      second,
+      (a, handful) => Handful.Several(a, handful)
+    )
+  }
 
   def addOliveColourToImage(olive: Olive): Image => Image = olive match {
     case Olive.Nicoise  => _.fillColor(Color.green).scale(1.5, 1.5)
