@@ -252,3 +252,21 @@ case class OliveSlice(olive: Olive)
 
 6. Can you write a generic `combineHandfuls` function that combines a handful of one type with a handful of a different type?
    If so, what would its signature be?
+
+## Lists
+
+Take a look at [the API documentation for List](https://www.scala-lang.org/files/archive/api/2.13.7/scala/collection/immutable/List.html).
+
+Handfuls are quite similar to the Scala `List`. For example, the function `foldHandful` has a similar signature to both the list `foldLeft` and `foldRight` functions.
+
+1. `sliceHandful` has the following signature:
+
+   ```scala
+   def sliceHandful[A, B](handful: Handful[A], f: A => Handful[B]): Handful[B]
+   ```
+   What function on lists has the most similar signature? Does it have a similar behaviour?
+
+2. What function on handful has the most similar signature and behaviour to [`++`](https://www.scala-lang.org/files/archive/api/2.13.7/scala/collection/immutable/List.html#++[B%3E:A](suffix:scala.collection.IterableOnce[B]):CC[B])?
+
+3. Is there a function that has a similar signature to `modifyHandful`?
+   If not, why?
