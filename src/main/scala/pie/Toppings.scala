@@ -71,9 +71,15 @@ object Toppings {
 
 
   sealed trait Handful[+A] {
-    def flatMap[B](f: A => Handful[B]): Handful[B] = sliceHandful(this, f)
+    def flatMap[B](f: A => Handful[B]): Handful[B] =  sliceHandful(this, f)
     def map[B](f: A => B): Handful[B] = modifyHandful(this, f)
-    def withFilter(f: A => Boolean): Handful[A] = ???
+    def withFilter(f: A => Boolean): Handful[A] = foldHandful[A, Handful[A]](this, Handful.Empty(), (a, handful) =>
+      if (f(a)) {
+        Handful.Several(a, handful)
+      } else {
+        handful
+      }
+    )
   }
 
   def modifyHandful[A, B](
@@ -123,7 +129,10 @@ object Toppings {
     grabHandful(n, Olive.Kalamata)
 
   def toNicoise(handful: HandfulOfOlives): HandfulOfOlives =
-    handful.map(_ => Olive.Nicoise)
+    for {
+      _ <- handful
+    } yield Olive.Nicoise
+
   //  modifyHandful( _ => Olive.Nicoise)
   def stuffWithPimento(handful: HandfulOfOlives): HandfulOfOlives =
     handful.map({
@@ -163,7 +172,10 @@ object Toppings {
   }
 
   def sliceHandfulOfOlives(handful: Handful[Olive]): Handful[OliveSlice] =
-    handful.flatMap(sliceOlive)
+    for {
+      olive <- handful
+      slice <- sliceOlive(olive)
+    } yield slice
 //    foldHandful[Olive, Handful[OliveSlice]](
 //      handful,
 //      Handful.Empty(),
@@ -224,10 +236,18 @@ object Toppings {
   }
 
   def pairOliveSlicesAndHamSlices(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[(OliveSlice, Ham.type)] =
-    for {
-      x <- pairOliveSlicesAndHam(olives, hams)
-      hamSlice <- sliceHam(x._2)
-    } yield (x._1, hamSlice)
+  {
+    // for {
+    //   (oliveSlice, ham) <- pairOliveSlicesAndHam(olives, hams)
+    //   hamSlice <- sliceHam(ham)
+    // } yield (oliveSlice, hamSlice)
+
+    pairOliveSlicesAndHam(olives, hams)
+      .withFilter({ case (_, _) => true})
+      .flatMap { case (oliveSlice, ham) =>
+        sliceHam(ham).map(hamSlice => (oliveSlice, hamSlice))
+      }
+  }
 
   def combineHandfuls[A](first: Handful[A], second: Handful[A]): Handful[A] = {
     foldHandful[A, Handful[A]](
