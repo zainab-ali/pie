@@ -73,6 +73,7 @@ object Toppings {
   sealed trait Handful[+A] {
     def flatMap[B](f: A => Handful[B]): Handful[B] = sliceHandful(this, f)
     def map[B](f: A => B): Handful[B] = modifyHandful(this, f)
+    def withFilter(f: A => Boolean): Handful[A] = ???
   }
 
   def modifyHandful[A, B](

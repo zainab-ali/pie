@@ -8,7 +8,7 @@ object ForComprehensionTest extends SimpleIOSuite {
   import Toppings.Olive._
   import Toppings.Handful._
 
-  pureTest("pairOlivesAndHam pairs each olive slice with each ham") {
+  pureTest("pairOliveSlicesAndHam pairs each olive slice with each ham") {
     val olives = Several(Kalamata, Several(Nicoise, Empty()))
     val ham = Several(Ham, Empty())
 
@@ -75,5 +75,22 @@ object ForComprehensionTest extends SimpleIOSuite {
 
     expect(pairOliveSlicesAndHamSlices(olives, ham) == result)
 
+  }
+
+  pureTest("withFilter filters out values") {
+    val olives = Several(Kalamata, Several(Nicoise, Empty()))
+    val filtered = olives
+      .flatMap(sliceOlive)
+      .withFilter({
+        case OliveSlice(Kalamata) => true
+        case _                    => false
+      })
+
+    val result = Several(
+      OliveSlice(Kalamata),
+      Several(OliveSlice(Kalamata), Several(OliveSlice(Kalamata), Empty()))
+    )
+
+    expect(filtered == result)
   }
 }

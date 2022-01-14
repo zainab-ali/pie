@@ -270,3 +270,42 @@ Handfuls are quite similar to the Scala `List`. For example, the function `foldH
 
 3. Is there a function that has a similar signature to `modifyHandful`?
    If not, why?
+
+## For comprehensions
+
+1. Write the `toNicoise` function using `for` comprehension instead of `map`:
+
+   Which version do you prefer?
+
+2. Write the `sliceHandfulOfOlives` function using `for` comprehension instead of `flatMap`.
+
+   Which version do you prefer?
+
+3. Implement the function `withFilter` to pass the new test in `ForComprehensionTest`.
+
+   *HINT:* You will need to use `foldHandful`.
+
+4. You can now rewrite `pairOliveSlicesAndHamSlices` to pattern match on the tuple:
+
+   ```scala
+      	for {
+      	  (oliveSlice, ham) <- pairOliveSlicesAndHam(olives, hams)
+      	  hamSlice <- sliceHam(ham)
+      	} yield (oliveSlice, hamSlice)
+   ```
+
+   Write the code that this desugars to using `withFilter`, `flatMap` and `map`.
+
+   What function is passed to `withFilter`?
+
+5. Rewrite the following code in `ForComprehensionTest` to use `for` comprehension:
+
+   ```scala
+    val filtered = olives
+      .flatMap(sliceOlive)
+      .withFilter({
+        case OliveSlice(Kalamata) => true
+        case _                    => false
+      })
+
+   ```
