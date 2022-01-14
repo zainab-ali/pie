@@ -70,7 +70,10 @@ object Toppings {
 
 
 
-  sealed trait Handful[+A]
+  sealed trait Handful[+A] {
+    def flatMap[B](f: A => Handful[B]): Handful[B] =  ???
+    def map[B](f: A => B): Handful[B] = ???
+  }
 
   object Handful {
     case class Empty[A]() extends Handful[A]
@@ -190,6 +193,10 @@ object Toppings {
       (olive, handful) => Handful.Several(olive, handful)
     )
   }
+
+  def pairOliveSlicesAndHam(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[(OliveSlice, Ham.type)] = ???
+
+  def pairOliveSlicesAndHamSlices(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[(OliveSlice, Ham.type)] = ???
 
   def combineHandfuls[A](first: Handful[A], second: Handful[A]): Handful[A] = {
     foldHandful[A, Handful[A]](
