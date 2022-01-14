@@ -71,9 +71,33 @@ object Toppings {
 
 
   sealed trait Handful[+A] {
-    def flatMap[B](f: A => Handful[B]): Handful[B] =  ???
-    def map[B](f: A => B): Handful[B] = ???
+    def flatMap[B](f: A => Handful[B]): Handful[B] = sliceHandful(this, f)
+    def map[B](f: A => B): Handful[B] = modifyHandful(this, f)
   }
+
+  def modifyHandful[A, B](
+                        handful: Handful[A],
+                        f: A => B
+                      ): Handful[B] =
+    foldHandful[A, Handful[B]](
+      handful,
+      Handful.Empty(),
+      (first, handful) => Handful.Several(f(first), handful)
+    )
+
+  def sliceHandful[A, B](handful: Handful[A], f: A => Handful[B]): Handful[B] =
+    foldHandful[A, Handful[B]](
+      handful,
+      Handful.Empty(),
+      (a, handful) => {
+        val bs = f(a)
+        foldHandful[B, Handful[B]](
+          bs,
+          handful,
+          (b, handful) => Handful.Several(b, handful)
+        )
+      }
+    )
 
   object Handful {
     case class Empty[A]() extends Handful[A]
@@ -98,16 +122,21 @@ object Toppings {
     grabHandful(n, Olive.Kalamata)
 
   def toNicoise(handful: HandfulOfOlives): HandfulOfOlives =
-    modifyHandful(handful, _ => Olive.Nicoise)
+    handful.map(_ => Olive.Nicoise)
+  //  modifyHandful( _ => Olive.Nicoise)
   def stuffWithPimento(handful: HandfulOfOlives): HandfulOfOlives =
-    modifyHandful(
-      handful,
-      {
-        case olive @ (Olive.Kalamata | Olive.Nicoise) =>
-          Olive.PimentoStuffed(olive, Pimento)
-        case olive: Olive.PimentoStuffed => olive
-      }
-    )
+    handful.map({
+      case olive @ (Olive.Kalamata | Olive.Nicoise) =>
+        Olive.PimentoStuffed(olive, Pimento)
+      case olive: Olive.PimentoStuffed => olive
+    })
+//    modifyHandful(
+//      handful,
+//      {
+//        case olive @ (Olive.Kalamata | Olive.Nicoise) =>
+//          Olive.PimentoStuffed(olive, Pimento)
+//        case olive: Olive.PimentoStuffed => olive
+//      }
 
   def foldHandful[A, B](
       handful: Handful[A],
@@ -124,15 +153,7 @@ object Toppings {
   def countHandful[A](handful: Handful[A]): Int =
     foldHandful(handful, 0, (_, count) => count + 1)
 
-  def modifyHandful[A](
-      handful: Handful[A],
-      f: A => A
-  ): Handful[A] =
-    foldHandful[A, Handful[A]](
-      handful,
-      Handful.Empty(),
-      (first, handful) => Handful.Several(f(first), handful)
-    )
+
 
   case class OliveSlice(olive: Olive)
 
@@ -141,49 +162,39 @@ object Toppings {
   }
 
   def sliceHandfulOfOlives(handful: Handful[Olive]): Handful[OliveSlice] =
-    foldHandful[Olive, Handful[OliveSlice]](
-      handful,
-      Handful.Empty(),
-      (olive, handful) => {
-        val slices = sliceOlive(olive)
-        foldHandful[OliveSlice, Handful[OliveSlice]](
-          slices,
-          handful,
-          (slice, handful) => Handful.Several(slice, handful)
-        )
-      }
-    )
+    handful.flatMap(sliceOlive)
+//    foldHandful[Olive, Handful[OliveSlice]](
+//      handful,
+//      Handful.Empty(),
+//      (olive, handful) => {
+//        val slices = sliceOlive(olive)
+//        foldHandful[OliveSlice, Handful[OliveSlice]](
+//          slices,
+//          handful,
+//          (slice, handful) => Handful.Several(slice, handful)
+//        )
+//      }
+//    )
 
   def sliceHam(ham: Ham.type): Handful[Ham.type] =
     grabHandful(3, ham)
 
   def sliceHandfulOfHam(handful: Handful[Ham.type]): Handful[Ham.type] =
-    foldHandful[Ham.type, Handful[Ham.type]](
-      handful,
-      Handful.Empty(),
-      (ham, handful) => {
-        val slices = sliceHam(ham)
-        foldHandful[Ham.type, Handful[Ham.type]](
-          slices,
-          handful,
-          (slice, handful) => Handful.Several(slice, handful)
-        )
-      }
-    )
+    handful.flatMap(ham => sliceHam(ham))
+//    foldHandful[Ham.type, Handful[Ham.type]](
+//      handful,
+//      Handful.Empty(),
+//      (ham, handful) => {
+//        val slices = sliceHam(ham)
+//        foldHandful[Ham.type, Handful[Ham.type]](
+//          slices,
+//          handful,
+//          (slice, handful) => Handful.Several(slice, handful)
+//        )
+//      }
+//    )
 
-  def sliceHandful[A, B](handful: Handful[A], f: A => Handful[B]): Handful[B] =
-    foldHandful[A, Handful[B]](
-      handful,
-      Handful.Empty(),
-      (a, handful) => {
-        val bs = f(a)
-        foldHandful[B, Handful[B]](
-          bs,
-          handful,
-          (b, handful) => Handful.Several(b, handful)
-        )
-      }
-    )
+
 
 
   def combineOlivesAndHam(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[Topping] = {
@@ -194,9 +205,28 @@ object Toppings {
     )
   }
 
-  def pairOliveSlicesAndHam(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[(OliveSlice, Ham.type)] = ???
+  def pairOliveSlicesAndHam(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[(OliveSlice, Ham.type)] = {
+    olives.flatMap { olive =>
+      sliceOlive(olive).flatMap { oliveSlice =>
+        hams.map { ham =>
+          (oliveSlice, ham)
+        }
+      }
+    }
 
-  def pairOliveSlicesAndHamSlices(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[(OliveSlice, Ham.type)] = ???
+
+    for {
+      olive <- olives
+      oliveSlice <- sliceOlive(olive)
+      ham <- hams
+    } yield (oliveSlice, ham)
+  }
+
+  def pairOliveSlicesAndHamSlices(olives: Handful[Olive], hams: Handful[Ham.type]): Handful[(OliveSlice, Ham.type)] =
+    for {
+      x <- pairOliveSlicesAndHam(olives, hams)
+      hamSlice <- sliceHam(x._2)
+    } yield (x._1, hamSlice)
 
   def combineHandfuls[A](first: Handful[A], second: Handful[A]): Handful[A] = {
     foldHandful[A, Handful[A]](
