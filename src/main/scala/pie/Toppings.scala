@@ -7,6 +7,8 @@ import doodle.image.syntax.core._
 
 object Toppings {
 
+  import Handful._
+
   object Pimento
 
   sealed trait Topping
@@ -68,49 +70,6 @@ object Toppings {
   // olivefyTheTopping(exchangeToppingForOlive)
   // olivefyTheTopping(exchangeOliveForTopping)
 
-
-
-  sealed trait Handful[+A] {
-    def flatMap[B](f: A => Handful[B]): Handful[B] =  sliceHandful(this, f)
-    def map[B](f: A => B): Handful[B] = modifyHandful(this, f)
-    def withFilter(f: A => Boolean): Handful[A] = foldHandful[A, Handful[A]](this, Handful.Empty(), (a, handful) =>
-      if (f(a)) {
-        Handful.Several(a, handful)
-      } else {
-        handful
-      }
-    )
-  }
-
-  def modifyHandful[A, B](
-                        handful: Handful[A],
-                        f: A => B
-                      ): Handful[B] =
-    foldHandful[A, Handful[B]](
-      handful,
-      Handful.Empty(),
-      (first, handful) => Handful.Several(f(first), handful)
-    )
-
-  def sliceHandful[A, B](handful: Handful[A], f: A => Handful[B]): Handful[B] =
-    foldHandful[A, Handful[B]](
-      handful,
-      Handful.Empty(),
-      (a, handful) => {
-        val bs = f(a)
-        foldHandful[B, Handful[B]](
-          bs,
-          handful,
-          (b, handful) => Handful.Several(b, handful)
-        )
-      }
-    )
-
-  object Handful {
-    case class Empty[A]() extends Handful[A]
-    case class Several[A](first: A, rest: Handful[A]) extends Handful[A]
-  }
-
   type HandfulOfOlives = Handful[Olive]
 
   val handfulOfHam: Handful[Ham.type] =
@@ -147,23 +106,6 @@ object Toppings {
 //          Olive.PimentoStuffed(olive, Pimento)
 //        case olive: Olive.PimentoStuffed => olive
 //      }
-
-  def foldHandful[A, B](
-      handful: Handful[A],
-      base: B,
-      combine: (A, B) => B
-  ): B = {
-    handful match {
-      case Handful.Empty() => base
-      case Handful.Several(first, rest) =>
-        combine(first, foldHandful(rest, base, combine))
-    }
-  }
-
-  def countHandful[A](handful: Handful[A]): Int =
-    foldHandful(handful, 0, (_, count) => count + 1)
-
-
 
   case class OliveSlice(olive: Olive)
 
@@ -267,41 +209,6 @@ object Toppings {
   val addPimentoToImage: Image => Image =
     image => image.scale(0.5, 0.5).fillColor(Color.darkRed).on(image)
 
-  def handfulOfOlivesToImage(
-      scale: Int,
-      handfulOfOlives: HandfulOfOlives
-  ): Image =
-    handfulToImage(
-      scale,
-      handfulOfOlives,
-      olive => addOliveColourToImage(olive)(oliveImage),
-      pointOfNthOlive
-    )
-
-  def handfulToImage[A](
-      scale: Int,
-      handful: Handful[A],
-      pieceImage: A => Image,
-      curve: (Int, Int, Int) => Point
-  ): Image = {
-    val total = countHandful(handful)
-    val (image, count) = foldHandful(
-      handful,
-      (Image.empty, total),
-      { case (piece, (image, n)) =>
-        val point = curve(scale, total, n)
-        (image.on(pieceImage(piece).at(point)), n - 1)
-      }
-    )
-    image
-  }
-
-  def handfulOfHamToImage(
-      scale: Int,
-      handfulOfHam: Handful[Ham.type]
-  ): Image =
-    handfulToImage(scale, handfulOfHam, _ => hamImage, pointOfNthHam)
-
   def toppingToImage(
       piece: Image,
       scale: Int,
@@ -379,4 +286,34 @@ object Toppings {
     }
     sweetcornToImageGo(total)
   }
+
+  def handfulOfOlivesToImage(
+      scale: Int,
+      handfulOfOlives: HandfulOfOlives
+  ): Image =
+    handfulToImage(
+      scale,
+      handfulOfOlives
+    )
+
+  def handfulOfHamToImage(
+      scale: Int,
+      handfulOfHam: Handful[Ham.type]
+  ): Image =
+    handfulToImage(scale, handfulOfHam)
+
+  implicit val hamPiece: Piece[Ham.type] =  new Piece[Ham.type] {
+    def image(ham: Ham.type): Image =
+      Image.square(15).fillColor(Color.pink).noStroke
+
+    def curve(scale: Int, total: Int, n: Int): Point =
+      pointOfNthHam(scale, total, n)
+  }
+
+  implicit val olivePiece: Piece[Olive] = new Piece[Olive] {
+    def image(olive: Olive): Image = addOliveColourToImage(olive)(oliveImage)
+    def curve(scale: Int, total: Int, n: Int): Point =
+      pointOfNthOlive(scale, total, n)
+  }
+
 }
