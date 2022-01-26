@@ -309,3 +309,44 @@ Handfuls are quite similar to the Scala `List`. For example, the function `foldH
       })
 
    ```
+
+# Implicits and typeclasses
+
+The code has several implicit `Piece[Ham.type]` instances, each with different images: `blackForestHam`, `parmaHam` and `americanHam`.
+
+1. Without running the application, predict which ham will be drawn on the pizza.
+
+   Run the application with `run 120 white`. Was the ham you expected drawn?
+
+2. Will the following code change draw the `blackForestHam` type?
+
+```diff
+  implicit val americanHamPieceImplicit: Piece[Ham.type] =  americanHamPiece
+
++ import germanPizzaImplicits._
+
+  def handfulOfHamToImage(
+      scale: Int,
+      handfulOfHam: Handful[Ham.type]
+  ): Image = {
+```
+
+3. What about the following code change?
+
+```diff
+   def handfulOfHamToImage(
+       scale: Int,
+       handfulOfHam: Handful[Ham.type]
+   ): Image = {
++    import germanPizzaImplicits._
+     handfulToImage(scale, handfulOfHam)
+   }
+
+```
+
+4. Consider the function `sweetcornHandfulToImage`. This is currently implemented using `toppingToImage`.
+
+    a. Can you construct an instance of `Piece` for a `Sweetcorn` using the `sweetcornImage` and `pointOfNthSweetcornInHandful` functions?
+       If not, why?
+
+    b. Is there a way of writing `sweetcornHandfulToImage` using `handfulToImage`?

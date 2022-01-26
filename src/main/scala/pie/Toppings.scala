@@ -23,7 +23,31 @@ object Toppings {
     case class PimentoStuffed(olive: Olive, pimento: Pimento.type) extends Olive
   }
 
-  case object Ham extends Topping
+  def hamPieceFromImage(i: Image): Piece[Ham.type] =  new Piece[Ham.type] {
+    def image(ham: Ham.type): Image = i
+
+    def curve(scale: Int, total: Int, n: Int): Point =
+      pointOfNthHam(scale, total, n)
+  }
+
+  val blackForestHamPiece = hamPieceFromImage(
+    Image.circle(15).fillColor(Color.pink).strokeWidth(2)
+  )
+
+  val americanHamPiece = hamPieceFromImage(
+    Image.square(15).fillColor(Color.pink).noStroke
+  )
+
+  val parmaHamPiece = hamPieceFromImage(
+    Image.rectangle(5, 20).fillColor(Color.white)
+      .beside(Image.rectangle(10, 20).fillColor(Color.pink.darken(0.2.normalized)))
+      .noStroke
+  )
+
+  case object Ham extends Topping {
+    implicit val hamPiece: Piece[Ham.type] = parmaHamPiece
+
+  }
 
   def modifyTheTopping(f: Topping => Topping): Topping = {
     val olive = Olive.Kalamata
@@ -290,24 +314,17 @@ object Toppings {
   def handfulOfOlivesToImage(
       scale: Int,
       handfulOfOlives: HandfulOfOlives
-  ): Image =
-    handfulToImage(
-      scale,
-      handfulOfOlives
-    )
+  ): Image = {
+    handfulToImage(scale, handfulOfOlives)
+  }
+
+  implicit val americanHamPieceImplicit: Piece[Ham.type] =  americanHamPiece
 
   def handfulOfHamToImage(
       scale: Int,
       handfulOfHam: Handful[Ham.type]
-  ): Image =
+  ): Image = {
     handfulToImage(scale, handfulOfHam)
-
-  implicit val hamPiece: Piece[Ham.type] =  new Piece[Ham.type] {
-    def image(ham: Ham.type): Image =
-      Image.square(15).fillColor(Color.pink).noStroke
-
-    def curve(scale: Int, total: Int, n: Int): Point =
-      pointOfNthHam(scale, total, n)
   }
 
   implicit val olivePiece: Piece[Olive] = new Piece[Olive] {
@@ -316,4 +333,9 @@ object Toppings {
       pointOfNthOlive(scale, total, n)
   }
 
+}
+
+object germanPizzaImplicits {
+
+  implicit val germanHamPiece: Piece[Toppings.Ham.type] = Toppings.blackForestHamPiece
 }
