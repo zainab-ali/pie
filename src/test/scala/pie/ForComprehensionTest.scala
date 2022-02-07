@@ -6,7 +6,7 @@ object ForComprehensionTest extends SimpleIOSuite {
 
   import Toppings._
   import Toppings.Olive._
-  import Toppings.Handful._
+  import Handful._
 
   pureTest("pairOliveSlicesAndHam pairs each olive slice with each ham") {
     val olives = Several(Kalamata, Several(Nicoise, Empty()))
