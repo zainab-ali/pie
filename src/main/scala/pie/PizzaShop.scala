@@ -6,13 +6,11 @@ import doodle.image.syntax._
 import doodle.java2d._
 
 import cats.data._
-
+import pie.core.{Sauce, Tomato, Bechamel}
+import pie.italy._
+import pie.france._
 
 final case class Pizza(size: Int, sauce: Sauce)
-
-sealed trait Sauce
-case object Tomato extends Sauce
-case object Bechamel extends Sauce
 
 sealed trait PizzaError
 case object NotASize extends PizzaError
@@ -42,6 +40,8 @@ object PizzaShop {
   def validateSauce(sauce: String): Either[PizzaError, Sauce] =
     if (sauce == "white") Right(Bechamel)
     else if (sauce == "red") Right(Tomato)
+    else if (sauce == "napoli") Right(Napoli)
+    else if (sauce == "blue") Right(BlueCheese)
     else Left(StrangeSauce)
 
   // This solution only uses pattern matching - it doesn't use a cats.data.Validated or any functions for handling Either
@@ -62,15 +62,9 @@ object PizzaShop {
     }
   }
 
-  def sauceToImage(scale: Int, sauce: Sauce): Image = sauce match {
-    case Tomato => Image.circle(scale * 0.75).fillColor(Color.red).noStroke
-    case Bechamel => Image.circle(scale * 0.75)
-        .fillColor(Color.green).noStroke
-  }
-
   def pizzaToImage(pizza: Pizza): Image = pizza match {
     case Pizza(size, sauce) =>
-      val sauceImage = sauceToImage(size, pizza.sauce)
+      val sauceImage = Sauce.toImage(size, pizza.sauce)
       val baseImage = Image.circle(size).fillColor(Color.beige)
       val handfulOfNicoiseOlives =
         Toppings.handfulOfOlivesToImage(

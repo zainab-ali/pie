@@ -350,3 +350,86 @@ The code has several implicit `Piece[Ham.type]` instances, each with different i
        If not, why?
 
     b. Is there a way of writing `sweetcornHandfulToImage` using `handfulToImage`?
+
+
+# Open and closed classes
+
+Your pizza shop has expanded to france and italy. While still having `Tomato` and `Bechamel` sauces, each country has a specialty sauce. The `Sauce` data type has been split into the following files:
+
+ - `core/Sauce.scala`
+ - `france/sauces.scala`
+ - `italy/sauces.scala`
+
+The `toImage` function is defined as follows:
+
+```scala
+object Sauce {
+  def toImage(scale: Int, sauce: Sauce): Image = sauce match {
+    case Tomato => Image.circle(scale * 0.75).fillColor(Color.red).noStroke
+    case Bechamel => Image.circle(scale * 0.75)
+        .fillColor(Color.green).noStroke
+  }
+}
+```
+
+1. Try and draw the italian `Napoli` sauce:
+
+   ```sh
+   run 120 napoli
+   ```
+
+    - What went wrong?
+    - Fix the error by adding a clause to `toImage` for `Napoli` that draws `Color.orange` sauce.
+    - Repeat this for the french `BlueCheese` sauce. `run 120 blue` should draw a `Color.blue` sauce.
+
+2. Is it possible for `Sauce` to be sealed? If not, why?
+
+3. Add a `Bologna` sauce to `italy/sauces.scala`. It should be brown in colour.
+   
+   - Check that you can run the application with `run 120 bologna`.
+   - Aside from the `italy/sauces.scala` file, where did you need to make code changes?
+
+4. Next, we'll experiment with adding a `toImage` function to the `Sauce` trait:
+
+   ```scala
+   trait Sauce {
+     def toImage(size: Int): Image
+   }
+   
+   object Sauce {
+     def toImage(size, sauce: Sauce): Image = sauce.toImage(size)
+   }
+   ```
+
+    - Implement this function for each subtype of `Sauce`.
+
+    - Add a light brown `Veloute` sauce to the `france/sauces.scala` file. Aside from the `france/sauces.scala` file, where do you need to make code changes?
+
+5. Now consider the typeclass:
+
+   ```scala
+   trait SauceToImage[A]
+     def toImage(size: Int): Image
+   }
+   
+   object Sauce {
+     def toImage[A](size)(implicit val sauceToImage: SauceToImage[A]): Image =
+       sauceToImage.toImage(size)
+   }
+   ```
+   
+   Implement this typeclass for each subtype of `Sauce`.
+   
+   As an example, here's how to implement it for `Tomato`:
+   
+   ```scala
+   object Tomato {
+     implicit val sauceToImage: SauceToImage[Tomato.type] = new SauceToImage[Tomato.type] {
+       def toImage(size: Int): Image = Image.circle(scale * 0.75).fillColor(Color.red).noStroke
+     }
+   }
+   ```
+
+6. The signature of `Sauce.toImage` is now different. Can the function be used in the same way by the `PizzaShop`?
+
+7. Remove the `trait Sauce` and the `extends Sauce` statement from each sauce. Should the code compile?
