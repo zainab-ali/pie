@@ -21,6 +21,12 @@ object Toppings {
     case object Kalamata extends Olive
     // Is there something odd about this definition of a pimento-stuffed olive? You don't need to address the problem.
     case class PimentoStuffed(olive: Olive, pimento: Pimento.type) extends Olive
+
+    implicit val olivePiece: Piece[Olive] = new Piece[Olive] {
+      def image(olive: Olive): Image = addOliveColourToImage(olive)(oliveImage)
+      def curve(scale: Int, total: Int, n: Int): Point =
+        pointOfNthOlive(scale, total, n)
+    }
   }
 
   def hamPieceFromImage(i: Image): Piece[Ham.type] =  new Piece[Ham.type] {
@@ -325,12 +331,6 @@ object Toppings {
       handfulOfHam: Handful[Ham.type]
   ): Image = {
     handfulToImage(scale, handfulOfHam)
-  }
-
-  implicit val olivePiece: Piece[Olive] = new Piece[Olive] {
-    def image(olive: Olive): Image = addOliveColourToImage(olive)(oliveImage)
-    def curve(scale: Int, total: Int, n: Int): Point =
-      pointOfNthOlive(scale, total, n)
   }
 
 }
