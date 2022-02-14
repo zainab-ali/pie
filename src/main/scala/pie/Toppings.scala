@@ -5,6 +5,10 @@ import doodle.image._
 import doodle.image.syntax._
 import doodle.image.syntax.core._
 
+class Toppings{
+  ???
+}
+
 object Toppings {
 
   import Handful._
@@ -21,6 +25,13 @@ object Toppings {
     case object Kalamata extends Olive
     // Is there something odd about this definition of a pimento-stuffed olive? You don't need to address the problem.
     case class PimentoStuffed(olive: Olive, pimento: Pimento.type) extends Olive
+
+    implicit val olivePiece: Piece[Olive] = new Piece[Olive] {
+      println("Olive Piece Implicit")
+      def image(olive: Olive): Image = addOliveColourToImage(olive)(oliveImage)
+      def curve(scale: Int, total: Int, n: Int): Point =
+        pointOfNthOlive(scale, total, n)
+    }
   }
 
   def hamPieceFromImage(i: Image): Piece[Ham.type] =  new Piece[Ham.type] {
@@ -49,8 +60,17 @@ object Toppings {
 
   }
 
+  class Banana(colour: Color)
+
+  object Banana {
+    implicit val bananaPiece: Piece[Banana] = ???
+  }
+
   def modifyTheTopping(f: Topping => Topping): Topping = {
     val olive = Olive.Kalamata
+    def foo(): Unit = {
+      ///
+    }
     f(olive)
   }
 
@@ -320,18 +340,18 @@ object Toppings {
 
   implicit val americanHamPieceImplicit: Piece[Ham.type] =  americanHamPiece
 
+//  import germanPizzaImplicits._
+
   def handfulOfHamToImage(
       scale: Int,
       handfulOfHam: Handful[Ham.type]
   ): Image = {
+    import germanPizzaImplicits._
+
     handfulToImage(scale, handfulOfHam)
   }
 
-  implicit val olivePiece: Piece[Olive] = new Piece[Olive] {
-    def image(olive: Olive): Image = addOliveColourToImage(olive)(oliveImage)
-    def curve(scale: Int, total: Int, n: Int): Point =
-      pointOfNthOlive(scale, total, n)
-  }
+
 
 }
 
