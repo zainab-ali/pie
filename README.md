@@ -433,3 +433,17 @@ object Sauce {
 6. The signature of `Sauce.toImage` is now different. Can the function be used in the same way by the `PizzaShop`?
 
 7. Remove the `trait Sauce` and the `extends Sauce` statement from each sauce. Should the code compile?
+
+# Ad-hoc polymorphism
+
+There have been a few changes to the codebase:
+ - The `Sauce` trait has now been removed in favour of the `CoreSauce` algebraic data type.
+ - The `PizzaShop` only handles italian pizzas: it has been moved to the `italy` package.
+
+1. Create instances of the `SauceToImage` typeclass for `Bechamel2`, `Napoli` and `Bologna`. Use these in place of the `???` in `PizzaShop`.
+
+2. Try and create a `SauceToImage` instance for `ItalianSauce`. How can you use this in the `PizzaShop`?
+
+3. Ultimately, we want to open a `PizzaShop` in France. Copy the `PizzaShop` to the `france` package and replace the `ItalianSauce` with `FrenchSauce`.
+	- What algebraic data types are duplicated?
+	- How would you reduce the duplication?

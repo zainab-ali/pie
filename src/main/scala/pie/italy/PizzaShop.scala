@@ -1,4 +1,4 @@
-package pie
+package pie.italy
 
 import doodle.core._
 import doodle.image._
@@ -6,9 +6,8 @@ import doodle.image.syntax._
 import doodle.java2d._
 
 import cats.data._
-import pie.core.{Sauce, Tomato, Bechamel, Tomato2, Bechamel2}
-import pie.italy._
-import pie.france._
+import pie.core.{Sauce, Tomato2, Bechamel2}
+import pie._
 
 final case class Pizza(size: Int, sauce: ItalianSauce)
 
@@ -20,7 +19,6 @@ case object PizzaTooSmall extends PizzaError
 case object StrangeSauce extends PizzaError
 
 object PizzaShop {
-
 
   def parseSize(size: String): Either[NotASize.type, Int] =
     size.toIntOption.toRight(NotASize).map(_ * 10)
@@ -67,7 +65,7 @@ object PizzaShop {
   def pizzaToImage(pizza: Pizza): Image = pizza match {
     case Pizza(size, sauce) =>
       val sauceImage: Image = pizza.sauce match {
-        case Core(Tomato2) => Sauce.toImage[Tomato.type](size)
+        case Core(Tomato2) => Sauce.toImage[Tomato2.type](size)
         case Core(Bechamel2) => ???
         case Napoli => ???
         case Bologna => ???
