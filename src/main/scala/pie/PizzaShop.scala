@@ -42,6 +42,8 @@ object PizzaShop {
     else if (sauce == "red") Right(Tomato)
     else if (sauce == "napoli") Right(Napoli)
     else if (sauce == "blue") Right(BlueCheese)
+    else if (sauce == "brown") Right(Bologna)
+    else if (sauce == "lightBrown") Right(Veloute)
     else Left(StrangeSauce)
 
   // This solution only uses pattern matching - it doesn't use a cats.data.Validated or any functions for handling Either
