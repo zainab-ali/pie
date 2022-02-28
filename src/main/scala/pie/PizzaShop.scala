@@ -6,11 +6,11 @@ import doodle.image.syntax._
 import doodle.java2d._
 
 import cats.data._
-import pie.core.{Sauce, Tomato, Bechamel}
+import pie.core.{Sauce, Tomato, Bechamel, Tomato2, Bechamel2}
 import pie.italy._
 import pie.france._
 
-final case class Pizza(size: Int, sauce: Sauce)
+final case class Pizza(size: Int, sauce: ItalianSauce)
 
 sealed trait PizzaError
 case object NotASize extends PizzaError
@@ -29,21 +29,21 @@ object PizzaShop {
     if (size < 0) Left(NegativeSize)
     else if (size < 3) Left(PizzaTooSmall)
     else if (size > 16) Left(PizzaTooBig)
-    else Right(Pizza(size, Tomato))
+    else Right(Pizza(size, Core(Tomato2)))
 
   def correction(error: PizzaError): Either[PizzaError, Pizza] = error match {
-    case PizzaTooSmall => Right(Pizza(3, Tomato))
-    case PizzaTooBig => Right(Pizza(16, Tomato))
+    case PizzaTooSmall => Right(Pizza(3, Core(Tomato2)))
+    case PizzaTooBig => Right(Pizza(16, Core(Tomato2)))
     case other => Left(other)
   }
 
-  def validateSauce(sauce: String): Either[PizzaError, Sauce] =
-    if (sauce == "white") Right(Bechamel)
-    else if (sauce == "red") Right(Tomato)
+  def validateSauce(sauce: String): Either[PizzaError, ItalianSauce] =
+    if (sauce == "white") Right(Core(Bechamel2))
+    else if (sauce == "red") Right(Core(Tomato2))
     else if (sauce == "napoli") Right(Napoli)
-    else if (sauce == "blue") Right(BlueCheese)
     else if (sauce == "brown") Right(Bologna)
-    else if (sauce == "lightBrown") Right(Veloute)
+    // else if (sauce == "blue") Right(BlueCheese)
+    // else if (sauce == "lightBrown") Right(Veloute)
     else Left(StrangeSauce)
 
   // This solution only uses pattern matching - it doesn't use a cats.data.Validated or any functions for handling Either
@@ -66,7 +66,12 @@ object PizzaShop {
 
   def pizzaToImage(pizza: Pizza): Image = pizza match {
     case Pizza(size, sauce) =>
-      val sauceImage = Sauce.toImage(size, pizza.sauce)
+      val sauceImage: Image = pizza.sauce match {
+        case Core(Tomato2) => Sauce.toImage[Tomato.type](size)
+        case Core(Bechamel2) => ???
+        case Napoli => ???
+        case Bologna => ???
+      }
       val baseImage = Image.circle(size).fillColor(Color.beige)
       val handfulOfNicoiseOlives =
         Toppings.handfulOfOlivesToImage(
