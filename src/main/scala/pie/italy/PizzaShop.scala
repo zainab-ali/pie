@@ -1,13 +1,12 @@
 package pie.italy
 
-import doodle.core._
-import doodle.image._
-import doodle.image.syntax._
-import doodle.java2d._
-
-import cats.data._
-import pie.core.{Sauce, Tomato2, Bechamel2}
-import pie._
+import doodle.core.*
+import doodle.image.*
+import doodle.image.syntax.*
+import doodle.java2d.*
+import cats.data.*
+import pie.core.{Bechamel2, FixedColorSauceToImage, Sauce, SauceToImage, Tomato2}
+import pie.*
 
 final case class Pizza(size: Int, sauce: ItalianSauce)
 
@@ -64,12 +63,14 @@ object PizzaShop {
 
   def pizzaToImage(pizza: Pizza): Image = pizza match {
     case Pizza(size, sauce) =>
-      val sauceImage: Image = pizza.sauce match {
-        case Core(Tomato2) => Sauce.toImage[Tomato2.type](size)
-        case Core(Bechamel2) => ???
-        case Napoli => ???
-        case Bologna => ???
-      }
+      val test: SauceToImage[ItalianSauce] = Bologna.sauceToImage
+      val sauceImage: Image = Sauce.toImage[ItalianSauce](size)(test)
+//        pizza.sauce match {
+//        case Core(Tomato2) => Sauce.toImage[Tomato2.type](size)
+//        case Core(Bechamel2) => Sauce.toImage[Bechamel2.type](size)
+//        case Napoli => ???
+//        case Bologna => ???
+//      }
       val baseImage = Image.circle(size).fillColor(Color.beige)
       val handfulOfNicoiseOlives =
         Toppings.handfulOfOlivesToImage(
