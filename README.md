@@ -447,3 +447,13 @@ There have been a few changes to the codebase:
 3. Ultimately, we want to open a `PizzaShop` in France. Copy the `PizzaShop` to the `france` package and replace the `ItalianSauce` with `FrenchSauce`.
 	- What algebraic data types are duplicated?
 	- How would you reduce the duplication?
+
+# Ad-hoc polymorphims: Typeclass instances
+
+We've created a `SauceToImage` typeclass instance for `ItalianSauce`, however it is incorrect: all Italian sauces are blue.
+
+```scala
+implicit val sauceToImage: FixedColorSauceToImage[ItalianSauce] =  new FixedColorSauceToImage[ItalianSauce](Color.cadetBlue)
+```
+
+Try creating a `SuaceToImage` typeclass instance for `ItalianSauce` where each sauce has a different colour. What code changes must you make?
