@@ -29,14 +29,14 @@ import doodle.image.*
 object Sauce {
 
   // def toImage(size: Int, sauce: Sauce): Image = sauce.toImage(size)
-  def toImage[A](size: Int)(implicit sauceToImage: SauceToImage[A]): Image =
-    sauceToImage.toImage(size)
+  def toImage[A](sauce: A, size: Int)(implicit sauceToImage: SauceToImage[A]): Image =
+    sauceToImage.toImage(sauce, size)
 //  def toImage[A, S <: SauceToImage[A]](size: Int)(implicit sauceToImage: S): Image = sauceToImage.toImage(size)
 
 }
 
 final class FixedColorSauceToImage[A](color: Color) extends SauceToImage[A] {
-  def toImage(size: Int): Image =
+  def toImage(sauce: A, size: Int): Image =
     Image.circle(size * 0.75).fillColor(color).noStroke
 }
 

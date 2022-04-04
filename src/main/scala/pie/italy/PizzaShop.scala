@@ -69,7 +69,9 @@ object PizzaShop {
       //val x = implicitly[SauceToImage[Bologna.type ]](Bologna.sauceToImage)
       //implicitly[SauceToImage[ItalianSauce]
       //Sync[F].delay()
-      val sauceImage: Image = Sauce.toImage[ItalianSauce](size)
+      // ops pattern
+      // val sauceImage = sauce.toImage(size)
+      val sauceImage: Image = Sauce.toImage[ItalianSauce](sauce, size)
 //        pizza.sauce match {
 //        case Core(Tomato2) => Sauce.toImage[Tomato2.type](size)
 //        case Core(Bechamel2) => Sauce.toImage[Bechamel2.type](size)
