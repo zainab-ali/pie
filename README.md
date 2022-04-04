@@ -448,7 +448,7 @@ There have been a few changes to the codebase:
 	- What algebraic data types are duplicated?
 	- How would you reduce the duplication?
 
-# Ad-hoc polymorphims: Typeclass instances
+## Ad-hoc polymorphism: Typeclass instances
 
 We've created a `SauceToImage` typeclass instance for `ItalianSauce`, however it is incorrect: all Italian sauces are blue.
 
@@ -457,3 +457,10 @@ implicit val sauceToImage: FixedColorSauceToImage[ItalianSauce] =  new FixedColo
 ```
 
 Try creating a `SuaceToImage` typeclass instance for `ItalianSauce` where each sauce has a different colour. What code changes must you make?
+
+## Add-hoc polymorphism: pattern-matching warm up exercise
+
+Read up on [pattern matching](https://docs.scala-lang.org/tour/pattern-matching.html). What do each of these symbols mean in a pattern match?
+ - `@`
+ - `:`
+ - `_`
