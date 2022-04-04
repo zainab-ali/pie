@@ -2,7 +2,7 @@ package pie.italy
 
 import doodle.core.Color
 import doodle.image.Image
-import pie.core.{CoreSauce, FixedColorSauceToImage, SauceToImage}
+import pie.core.{Bechamel2, CoreSauce, FixedColorSauceToImage, SauceToImage, Tomato2}
 
 sealed trait ItalianSauce {}
 
@@ -18,9 +18,10 @@ object ItalianSauce {
     }
 
   def color(sauce: ItalianSauce): Color = sauce match {
-    case _: pie.italy.Napoli.type => Color.orange
-    case _: pie.italy.Bologna.type => Color.brown
-    case _: pie.italy.Core= Core(sause).c
+    case pie.italy.Napoli => Color.orange
+    case pie.italy.Bologna => Color.brown
+    case pie.italy.Core(Tomato2) => Color.red
+    case pie.italy.Core(Bechamel2) => Color.white
   }
   //new FixedColorSauceToImage[ItalianSauce](Color.cadetBlue)
 }
