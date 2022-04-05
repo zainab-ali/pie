@@ -63,21 +63,7 @@ object PizzaShop {
 
   def pizzaToImage(pizza: Pizza): Image = pizza match {
     case Pizza(size, sauce) =>
-//      val test: SauceToImage[ItalianSauce] = Bologna.sauceToImage
-      // known as "summoning"
-      //val x = implicitly[SauceToImage[Bologna.type ]]
-      //val x = implicitly[SauceToImage[Bologna.type ]](Bologna.sauceToImage)
-      //implicitly[SauceToImage[ItalianSauce]
-      //Sync[F].delay()
-      // ops pattern
-      // val sauceImage = sauce.toImage(size)
       val sauceImage: Image = Sauce.toImage[ItalianSauce](sauce, size)
-//        pizza.sauce match {
-//        case Core(Tomato2) => Sauce.toImage[Tomato2.type](size)
-//        case Core(Bechamel2) => Sauce.toImage[Bechamel2.type](size)
-//        case Napoli => ???
-//        case Bologna => ???
-//      }
       val baseImage = Image.circle(size).fillColor(Color.beige)
       val handfulOfNicoiseOlives =
         Toppings.handfulOfOlivesToImage(
