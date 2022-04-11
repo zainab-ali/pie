@@ -5,8 +5,9 @@ import doodle.image.*
 import doodle.image.syntax.*
 import doodle.java2d.*
 import cats.data.*
-import pie.core.{Bechamel2, FixedColorSauceToImage, Sauce, SauceToImage, Tomato2}
+import pie.core.{Bechamel2, SauceToImage, Tomato2}
 import pie.*
+import pie.core.implicits.*
 
 final case class Pizza(size: Int, sauce: ItalianSauce)
 
@@ -63,7 +64,7 @@ object PizzaShop {
 
   def pizzaToImage(pizza: Pizza): Image = pizza match {
     case Pizza(size, sauce) =>
-      val sauceImage: Image = Sauce.toImage[ItalianSauce](sauce, size)
+      val sauceImage: Image = sauce.toImage(size)
       val baseImage = Image.circle(size).fillColor(Color.beige)
       val handfulOfNicoiseOlives =
         Toppings.handfulOfOlivesToImage(

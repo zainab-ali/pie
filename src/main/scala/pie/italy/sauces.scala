@@ -2,7 +2,7 @@ package pie.italy
 
 import doodle.core.Color
 import doodle.image.Image
-import pie.core.{Bechamel2, CoreSauce, FixedColorSauceToImage, SauceToImage, Tomato2}
+import pie.core.{Bechamel2, CoreSauce, SauceToImage, Tomato2}
 
 sealed trait ItalianSauce
 
@@ -22,16 +22,8 @@ object ItalianSauce {
   }
 }
 
-object Napoli extends ItalianSauce {
+object Napoli extends ItalianSauce
 
-  implicit val sauceToImage: FixedColorSauceToImage[Napoli.type] =
-    new FixedColorSauceToImage[Napoli.type](Color.orange)
-}
-
-object Bologna extends ItalianSauce {
-
-  implicit val sauceToImage: FixedColorSauceToImage[Bologna.type] =
-    new FixedColorSauceToImage[Bologna.type](Color.brown)
-}
+object Bologna extends ItalianSauce
 
 final case class Core(core: CoreSauce) extends ItalianSauce
