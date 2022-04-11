@@ -464,3 +464,13 @@ Read up on [pattern matching](https://docs.scala-lang.org/tour/pattern-matching.
  - `@`
  - `:`
  - `_`
+
+# Extension methods
+
+Read up on [enriched interfaces](https://books.underscore.io/essential-scala/essential-scala.html#enriched-interfaces) in Scala 2. This introduces the ”ops” pattern, known as ”extension methods” in Scala 3. 
+
+Can we use an extension method to clean up our `sauceImage` generation in `PizzaShop`?
+
+```scala
+val sauceImage: Image = Sauce.toImage[ItalianSauce](sauce, size)
+```
