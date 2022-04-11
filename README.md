@@ -474,3 +474,11 @@ Can we use an extension method to clean up our `sauceImage` generation in `Pizza
 ```scala
 val sauceImage: Image = Sauce.toImage[ItalianSauce](sauce, size)
 ```
+
+# Recap: ad-hoc polymorphism
+
+Both the Italian and French pizza shops should validate pizzas in the same way. We're next going to move the validation logic to the `core` package.
+
+The `PizzaError` algebraic data type has been moved to `core`. A `Validation` object has been added for validation-related logic.
+
+Take a look at the `Validation` object. Do you see any problems with moving the `validateSauce` to the `Validation` object? How you can address these with polymorphic code (would a typeclass help)?

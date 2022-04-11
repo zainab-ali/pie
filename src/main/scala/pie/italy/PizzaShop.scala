@@ -11,17 +11,8 @@ import pie.core.implicits.*
 
 final case class Pizza(size: Int, sauce: ItalianSauce)
 
-sealed trait PizzaError
-case object NotASize extends PizzaError
-case object NegativeSize extends PizzaError
-case object PizzaTooBig extends PizzaError
-case object PizzaTooSmall extends PizzaError
-case object StrangeSauce extends PizzaError
 
 object PizzaShop {
-
-  def parseSize(size: String): Either[NotASize.type, Int] =
-    size.toIntOption.toRight(NotASize).map(_ * 10)
 
   def validateSize(size: Int): Either[PizzaError, Pizza] =
     if (size < 0) Left(NegativeSize)
@@ -87,7 +78,7 @@ object PizzaShop {
   }
 
   def main(args: Array[String]): Unit = {
-    val eitherSizeOrError = parseSize(args(0))
+    val eitherSizeOrError = Validation.parseSize(args(0))
     // This solution uses only pattern matching.
     // If you like, experiment with using functions such as `flatMap`
     val eitherPizzaOrError = eitherSizeOrError match {
