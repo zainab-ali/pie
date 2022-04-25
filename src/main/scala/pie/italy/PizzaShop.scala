@@ -8,6 +8,7 @@ import cats.data.*
 import pie.core.{Bechamel2, SauceToImage, Tomato2}
 import pie.*
 import pie.core.implicits.*
+import pie.core.Validation
 
 final case class Pizza(size: Int, sauce: ItalianSauce)
 
@@ -39,19 +40,19 @@ object PizzaShop {
   // Try playing around with the following code:
   // > import cats.implicits._
   // > validateSize(size).handleErrorWith(correction).toValidatedNel
-  def validatePizza(size: Int, sauce: String): Either[NonEmptyList[PizzaError], Pizza] = {
-    val eitherSizeOrError = validateSize(size) match {
-      case Right(size) => Right(size)
-      case Left(error) => correction(error)
-    }
-    val eitherSauceOrError = validateSauce(sauce)
-    (eitherSizeOrError, eitherSauceOrError) match {
-      case (Left(sizeError), Left(sauceError)) => Left(NonEmptyList(sizeError, List(sauceError)))
-      case (Left(sizeError), Right(_)) => Left(NonEmptyList(sizeError, Nil))
-      case (Right(_), Left(sauceError)) => Left(NonEmptyList(sauceError, Nil))
-      case (Right(pizza), Right(sauce)) => Right(pizza.copy(size = size, sauce = sauce))
-    }
-  }
+//  def validatePizza(size: Int, sauce: String): Either[NonEmptyList[PizzaError], Pizza] = {
+//    val eitherSizeOrError = validateSize(size) match {
+//      case Right(size) => Right(size)
+//      case Left(error) => correction(error)
+//    }
+//    val eitherSauceOrError = validateSauce(sauce)
+//    (eitherSizeOrError, eitherSauceOrError) match {
+//      case (Left(sizeError), Left(sauceError)) => Left(NonEmptyList(sizeError, List(sauceError)))
+//      case (Left(sizeError), Right(_)) => Left(NonEmptyList(sizeError, Nil))
+//      case (Right(_), Left(sauceError)) => Left(NonEmptyList(sauceError, Nil))
+//      case (Right(pizza), Right(sauce)) => Right(pizza.copy(size = size, sauce = sauce))
+//    }
+//  }
 
   def pizzaToImage(pizza: Pizza): Image = pizza match {
     case Pizza(size, sauce) =>
@@ -84,7 +85,7 @@ object PizzaShop {
     val eitherPizzaOrError = eitherSizeOrError match {
       case Right(size) =>
         val sauce = args(1)
-        validatePizza(size, sauce)
+        Validation.validatePizza(size, sauce)(???)
       case Left(error) =>
         Left(NonEmptyList(error, Nil))
     }
