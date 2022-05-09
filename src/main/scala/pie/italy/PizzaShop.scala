@@ -9,6 +9,8 @@ import pie.core.{Bechamel2, SauceToImage, Tomato2}
 import pie.*
 import pie.core.implicits.*
 import pie.core.Validation
+import pie.core.*
+
 
 final case class Pizza(size: Int, sauce: ItalianSauce)
 

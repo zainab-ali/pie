@@ -482,3 +482,18 @@ Both the Italian and French pizza shops should validate pizzas in the same way. 
 The `PizzaError` algebraic data type has been moved to `core`. A `Validation` object has been added for validation-related logic.
 
 Take a look at the `Validation` object. Do you see any problems with moving the `validateSauce` to the `Validation` object? How you can address these with polymorphic code (would a typeclass help)?
+
+# Algebraic data types and type parameters
+
+The project fails to compile with the following error:
+
+```
+[error] -- [E007] Type Mismatch Error: pie/src/main/scala/pie/core/Validation.scala:25:87
+[error] 25 |            case (Right(pizza), Right(sauce)) => Right(pizza.copy(size = size, sauce = sauce))
+[error]    |                                                                                       ^^^^^
+[error]    |                                        Found:    (sauce : T)
+[error]    |                                        Required: pie.italy.ItalianSauce
+[error] one error found
+```
+
+Take a look at the `validatePizza` function. What do you think is causing the error?
