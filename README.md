@@ -497,3 +497,24 @@ The project fails to compile with the following error:
 ```
 
 Take a look at the `validatePizza` function. What do you think is causing the error?
+
+# Types and precision
+
+Take a look at the following `validateSize` and `correction` functions.
+
+```scala
+def validateSize(size: Int): Either[PizzaError, Pizza] =
+  if (size < 0) Left(NegativeSize)
+  else if (size < 3) Left(PizzaTooSmall)
+  else if (size > 16) Left(PizzaTooBig)
+  else Right(Pizza(size, Core(Tomato2)))
+
+def correction(error: PizzaError): Either[PizzaError, Pizza] = error match {
+  case PizzaTooSmall => Right(Pizza(3, Core(Tomato2)))
+  case PizzaTooBig => Right(Pizza(16, Core(Tomato2)))
+  case other => Left(other)
+}
+```
+
+ - Do you agree with the return type of these functions? Is there a better type than `Either[PizzaError, Pizza]`?
+ - These functions use a default `ItalianSauce` value of `Core(Tomato2)`. How might you use a typeclass to write them for a generic sauce?
