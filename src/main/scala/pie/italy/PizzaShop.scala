@@ -27,9 +27,15 @@ object PizzaShop {
       Right(CorePizza(size, Core(Tomato2)))
     }
 
-  def correction(error: PizzaError): Either[PizzaError, Pizza] = error match {
-    case PizzaTooSmall => Right(Pizza(3, Core(Tomato2)))
-    case PizzaTooBig => Right(Pizza(16, Core(Tomato2)))
+  // CorePizza[ItlianSauce]
+  // CorePizza[Core]
+  // Core extends ItalianSauce
+
+  def correction(error: PizzaError): Either[PizzaError, ItalianPizza] = error match {
+    case PizzaTooSmall =>
+      val tomatoPizza = CorePizza[ItalianSauce](3, Core(Tomato2))
+      Right(tomatoPizza)
+    case PizzaTooBig => Right(CorePizza(16, Core(Tomato2)))
     case other => Left(other)
   }
 
