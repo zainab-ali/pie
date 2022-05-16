@@ -9,19 +9,23 @@ import pie.core.{Bechamel2, SauceToImage, Tomato2}
 import pie.*
 import pie.core.implicits.*
 import pie.core.Validation
-import pie.core.*
-
-
-final case class Pizza(size: Int, sauce: ItalianSauce)
+import pie.core.{Pizza => CorePizza, *}
+import pie.core.StrangeSauce
 
 
 object PizzaShop {
+
+  type ItalianPizza = CorePizza[ItalianSauce]
+  type Pizza = CorePizza[ItalianSauce]
 
   def validateSize(size: Int): Either[PizzaError, Pizza] =
     if (size < 0) Left(NegativeSize)
     else if (size < 3) Left(PizzaTooSmall)
     else if (size > 16) Left(PizzaTooBig)
-    else Right(Pizza(size, Core(Tomato2)))
+    else {
+      val defaultPizza: ItalianPizza = CorePizza[ItalianSauce](size, Core(Tomato2))
+      Right(CorePizza(size, Core(Tomato2)))
+    }
 
   def correction(error: PizzaError): Either[PizzaError, Pizza] = error match {
     case PizzaTooSmall => Right(Pizza(3, Core(Tomato2)))
@@ -29,7 +33,7 @@ object PizzaShop {
     case other => Left(other)
   }
 
-  def validateSauce(sauce: String): Either[PizzaError, ItalianSauce] =
+  def validateSauce(sauce: String): Either[StrangeSauce.type, ItalianSauce] =
     if (sauce == "white") Right(Core(Bechamel2))
     else if (sauce == "red") Right(Core(Tomato2))
     else if (sauce == "napoli") Right(Napoli)
@@ -82,12 +86,15 @@ object PizzaShop {
 
   def main(args: Array[String]): Unit = {
     val eitherSizeOrError = Validation.parseSize(args(0))
+    implicit val sauceParser = new SauceParser[ItalianSauce]{
+      override def apply(sauce: String): Either[StrangeSauce.type, ItalianSauce] = validateSauce(sauce)
+    }
     // This solution uses only pattern matching.
     // If you like, experiment with using functions such as `flatMap`
     val eitherPizzaOrError = eitherSizeOrError match {
       case Right(size) =>
         val sauce = args(1)
-        Validation.validatePizza(size, sauce)(???)
+        Validation.validatePizza(size, sauce)
       case Left(error) =>
         Left(NonEmptyList(error, Nil))
     }
