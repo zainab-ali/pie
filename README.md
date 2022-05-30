@@ -518,3 +518,12 @@ def correction(error: PizzaError): Either[PizzaError, Pizza] = error match {
 
  - Do you agree with the return type of these functions? Is there a better type than `Either[PizzaError, Pizza]`?
  - These functions use a default `ItalianSauce` value of `Core(Tomato2)`. How might you use a typeclass to write them for a generic sauce?
+
+# Types and precision: counting types
+
+The `Boolean` type represents two possible values: `true` or `false`.
+
+1. How many values does the `PizzaError` type represent?
+2. What about `Either[PizzaError, Unit]`?
+3. What about the `Int` type?
+3. What about `Pizza[T]`?
