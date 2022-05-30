@@ -23,7 +23,10 @@ object Validation {
         }
     }
 
-    def makeValidSize(size: Int): Option[ValidSize] = ???
+    //def makeValidSize(size: Int): ValidSize = ???  // No
+    def makeValidSize(size: Int): Option[ValidSize] = {
+        ValidSize.values.find(_.size() == ValidSize.size())
+    }
 
     def validateSize(size: Int): Either[PizzaError, ValidSize] = ???
 
