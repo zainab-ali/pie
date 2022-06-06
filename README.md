@@ -527,3 +527,43 @@ The `Boolean` type represents two possible values: `true` or `false`.
 2. What about `Either[PizzaError, Unit]`?
 3. What about the `Int` type?
 3. What about `Pizza[T]`?
+
+# Types and precision: validation
+
+Our `ValidSize` datatype is defined as follows:
+
+```scala
+sealed trait ValidSize {
+  val size: Int
+}
+
+object ValidSize {
+    case object Three extends ValidSize {
+        override val size: Int = 3
+    }
+    case object Four extends ValidSize  {
+        override val size: Int = 4
+    }
+    case object Five extends ValidSize {
+        override val size: Int = 5
+    }
+    case object Six extends ValidSize {
+        override val size: Int = 6
+    }
+
+    val values: Set[ValidSize] = Set(Three, Four, Five, Six)
+}
+```
+
+1. Use `values` to write a function that constructs an `Option[ValidSize]` from `Int`:
+
+```scala
+def makeValidSize(size: Int): Option[ValidSize] = ???
+```
+
+2. How can you use this in a function that constructs an `Either[PizzaError, ValidSize]`?
+
+```scala
+def validateSize(size: Int): Either[PizzaError, ValidSize] = ???
+```
+
