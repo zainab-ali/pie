@@ -14,14 +14,13 @@ object ValidSize {
 //      negative if x y
 //      positive if x > y
 //      zero otherwise (if x == y)
-
-  implicit val ord = new Ordering[ValidSize]{
-    override def  compare(x: ValidSize, y: ValidSize): Int ={
-      if(x.size < y) -1
+  implicit val ord: Ordering[ValidSize] = new Ordering[ValidSize] {
+    override def  compare(x: ValidSize, y: ValidSize): Int = {
+      ???
     }
   }
 
-    val intOrd: Ordering[ValidSize] = implicitly
+    // val intOrd: Ordering[ValidSize] = implicitly
 
     val minSize: Int = ???
     case object Three extends ValidSize {

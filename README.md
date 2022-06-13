@@ -567,3 +567,21 @@ def makeValidSize(size: Int): Option[ValidSize] = ???
 def validateSize(size: Int): Either[PizzaError, ValidSize] = ???
 ```
 
+
+# Types and precision: typeclasses
+
+
+Consider the following code in `ValidSize`
+
+```
+  implicit val ord: Ordering[ValidSize] = new Ordering[ValidSize] {
+    override def  compare(x: ValidSize, y: ValidSize): Int = {
+      ???
+    }
+  }
+```
+
+1. What is the typeclass that this relates to?
+2. Which part of the code corresponds to the typeclass instance?
+3. Implement `compare` using the `ValidSize.size` field.
+4. Can you implement it using the `Ordering[Int]` instance?
