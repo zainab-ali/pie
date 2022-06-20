@@ -585,3 +585,15 @@ Consider the following code in `ValidSize`
 2. Which part of the code corresponds to the typeclass instance?
 3. Implement `compare` using the `ValidSize.size` field.
 4. Can you implement it using the `Ordering[Int]` instance?
+
+# Types and precision: typeclass reuse
+
+Take a look at the `ValidSize.scala` file:
+
+1. The `minSize` is incorrectly set to `42`. Use the `min` function to find the correct `minSize`. 
+2. Take a look at the `Ordering` instance for `ValidSize`.
+  - How can you obtain an instance for `Ordering[Int]`?
+  - Think of a way of reusing `Ordering[Int]` instance to construct the `Ordering[ValidSize]`.
+3. cats has an `Order` typeclass that behaves similarly to `Ordering`.
+  - Take a look at the `Order` typeclass. Can you construct an `Order` from an `Ordering`?
+  - Can you use `Order` to simplify the implementation of `min`?
