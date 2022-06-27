@@ -1,6 +1,8 @@
 package pie.core
 
+import cats.NonEmptyTraverse
 import cats.data.NonEmptyList
+import cats.implicits.*
 
 sealed trait ValidSize {
   val size: Int
@@ -18,10 +20,22 @@ object ValidSize {
 //      zero otherwise (if x == y)
   implicit val ord: Ordering[ValidSize] = new Ordering[ValidSize] {
     override def  compare(x: ValidSize, y: ValidSize): Int = {
-      if(x.size > y.size) { 1 }
-      else if(x.size < y.size) { -1 }
-      else { 0 }
+      val ordering: Ordering[Int] = implicitly
+//      if(x.size > y.size) { 1 }
+//      else if(x.size < y.size) { -1 }
+//      else { 0 }
+
+      ordering.compare(x.size, y.size)
     }
+  }
+
+val orderingInt: Ordering[Int] = new Ordering[Int] {
+  override def  compare(x: Int, y: Int): Int = {
+    if(x > y) 1
+    else if(x < y) -1
+    else 0
+  }
+
   }
 
   ord.compare(Three, Three) == 0
@@ -30,7 +44,6 @@ object ValidSize {
 
     // val intOrd: Ordering[ValidSize] = implicitly
 
-    val minSize: Int = 42
     case object Three extends ValidSize {
         override val size: Int = 3
     }
@@ -44,8 +57,10 @@ object ValidSize {
         override val size: Int = 6
     }
 
-    val values: Set[ValidSize] = Set(Four, Five, Six, Three)
-//    val minValidSize: ValidSize = min(values.toList)
+  val test: NonEmptyTraverse[NonEmptyList] = implicitly
+  val values: NonEmptyList[ValidSize] = NonEmptyList.of(Four, Five, Six, Three)
+
+  //TODO Why is minimum not available?
 
     def min[A](elements: NonEmptyList[A])(implicit ordering: Ordering[A]): A = {
 //      elements.foldLeft(elements.head)((a, b) => {
@@ -60,5 +75,8 @@ object ValidSize {
         else a
       })
     }
+
+  val minSize: Int = min[ValidSize](values).size
+
 
 }
