@@ -24,13 +24,31 @@ object ValidSize {
     }
   }
 
+
   ord.compare(Three, Three) == 0
   ord.compare(Three, Four) == -1
   ord.compare(Four, Three) == +1
 
     // val intOrd: Ordering[ValidSize] = implicitly
 
-    val minSize: Int = 42
+  val orderingForInt = implicitly[Ordering[Int]]
+
+    val minSize: Int = min[Int](NonEmptyList.fromListUnsafe(validSize.toList))
+
+    case class Mao(name: String)
+    implicit val maoOrdering: Ordering[Mao] = myImplicitly
+//    implicitly[Ordering[Mao]]
+
+// myImplicitly(myImplicitly(myImplicitly(myImplicitly(myImplicitly(...)))))
+
+    def myImplicitly(implicit e: Ordering[Mao]): Ordering[Mao] = e
+    //myImplicitly
+
+    def foo(a:Int)(implicit b: Ordering[Mao]): Unit = {
+      ()
+    }
+    foo(1)(maoOrdering)
+
     case object Three extends ValidSize {
         override val size: Int = 3
     }
@@ -45,6 +63,7 @@ object ValidSize {
     }
 
     val values: Set[ValidSize] = Set(Four, Five, Six, Three)
+    val validSize: Set[Int] = Set(Four.size, Five.size, Six.size, Three.size)
 //    val minValidSize: ValidSize = min(values.toList)
 
     def min[A](elements: NonEmptyList[A])(implicit ordering: Ordering[A]): A = {
