@@ -597,3 +597,10 @@ Take a look at the `ValidSize.scala` file:
 3. cats has an `Order` typeclass that behaves similarly to `Ordering`.
   - Take a look at the `Order` typeclass. Can you construct an `Order` from an `Ordering`?
   - Can you use `Order` to simplify the implementation of `min`?
+
+# Types and precision: typeclass reuse (continued)
+
+Last week, we looked at implicits in depth, including the use of the `implicitly` function. We saw how we could simplify our `Ordering` instance for `ValidSize` by reusing the `Ordering` instance for `Int`. We then tried to simplify the implementation of `min`.
+
+1. Look at `ValidSize.scala` file. Does a `NonEmptyList` have a `NonEmptyTraverse` instance? How do you know?
+2. Look at the api docs for the [minimum function](https://typelevel.org/cats/api/cats/NonEmptyTraverse.html#minimum[A](fa:F[A])(implicitA:cats.Order[A]):A). We cannot call `minimum` on a `NonEmptyList[ValidSize]`. Why not?
