@@ -2,7 +2,7 @@ package pie.core
 
 import cats.data.NonEmptyList
 import pie.italy.{Bologna, Core, ItalianSauce, Napoli}
-import pie.italy.PizzaShop.{ItalianPizza, correction, validateSize => italianValidateSize}
+import pie.italy.PizzaShop.{ItalianPizza, correction => italianCorrection, validateSize => italianValidateSize}
 
 trait SauceParser[T] {
     def apply(sauce: String): Either[StrangeSauce.type, T]
@@ -36,6 +36,7 @@ object Validation {
             else Left(PizzaTooBig)
     }
 
+    def correction(error: PizzaError): Either[PizzaError, ValidSize] = ???
 
 
 
@@ -44,7 +45,7 @@ object Validation {
     def validatePizza[T](size: Int, sauce: String)(implicit sauceParser: SauceParser[T]): Either[NonEmptyList[PizzaError], Pizza[T]] = {
         val eitherSizeOrError = italianValidateSize(size) match {
             case Right(size) => Right(size)
-            case Left(error) => correction(error)
+            case Left(error) => italianCorrection(error)
         }
         val eitherSauceOrError = sauceParser(sauce)
         (eitherSizeOrError, eitherSauceOrError) match {

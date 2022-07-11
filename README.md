@@ -604,3 +604,13 @@ Last week, we looked at implicits in depth, including the use of the `implicitly
 
 1. Look at `ValidSize.scala` file. Does a `NonEmptyList` have a `NonEmptyTraverse` instance? How do you know?
 2. Look at the api docs for the [minimum function](https://typelevel.org/cats/api/cats/NonEmptyTraverse.html#minimum[A](fa:F[A])(implicitA:cats.Order[A]):A). We cannot call `minimum` on a `NonEmptyList[ValidSize]`. Why not?
+
+# The ApplicativeError typeclass
+ - Look at the correction function in `PizzaShop`. We can redefine this to use our new `ValidSize`. Write the implementation for this in the `Validation.scala` file:
+ 
+ ```
+  def correction(error: PizzaError): Either[PizzaError, ValidSize] = ???
+ ```
+ - 
+ - Use the new `validateSize` and `correction` functions in the `validatePizza` function.
+
