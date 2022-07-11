@@ -1,5 +1,6 @@
 package pie.core
 
+import cats.Order
 import cats.NonEmptyTraverse
 import cats.data.NonEmptyList
 import cats.implicits.*
@@ -28,14 +29,24 @@ object ValidSize {
       ordering.compare(x.size, y.size)
     }
   }
+  implicit val catsOrder: Order[ValidSize] = new Order[ValidSize] {
+    override def  compare(x: ValidSize, y: ValidSize): Int = {
+      val ordering: Ordering[Int] = implicitly
+//      if(x.size > y.size) { 1 }
+//      else if(x.size < y.size) { -1 }
+//      else { 0 }
 
-val orderingInt: Ordering[Int] = new Ordering[Int] {
-  override def  compare(x: Int, y: Int): Int = {
-    if(x > y) 1
-    else if(x < y) -1
-    else 0
+      ordering.compare(x.size, y.size)
+    }
   }
 
+
+  val orderingInt: Ordering[Int] = new Ordering[Int] {
+    override def  compare(x: Int, y: Int): Int = {
+      if(x > y) 1
+      else if(x < y) -1
+      else 0
+    }
   }
 
   ord.compare(Three, Three) == 0
@@ -60,20 +71,19 @@ val orderingInt: Ordering[Int] = new Ordering[Int] {
   val test: NonEmptyTraverse[NonEmptyList] = implicitly
   val values: NonEmptyList[ValidSize] = NonEmptyList.of(Four, Five, Six, Three)
 
-  //TODO Why is minimum not available?
-
-    def min[A](elements: NonEmptyList[A])(implicit ordering: Ordering[A]): A = {
+    def min[A](elements: NonEmptyList[A])(implicit order: Order[A]): A = {
 //      elements.foldLeft(elements.head)((a, b) => {
 //        val mile: Int = ordering.compare(a,b)
 //        if (mile == 1) b
 //        else a
 //      })
 
-      elements.reduceLeft((a, b)=>  {
-        val mile: Int = ordering.compare(a,b)
-        if (mile == 1) b
-        else a
-      })
+      // elements.reduceLeft((a, b)=>  {
+      //   val mile: Int = ordering.compare(a,b)
+      //   if (mile == 1) b
+      //   else a
+      // })
+      elements.minimum
     }
 
   val minSize: Int = min[ValidSize](values).size
