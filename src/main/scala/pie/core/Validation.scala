@@ -10,11 +10,20 @@ trait SauceParser[T] {
 }
 
 object Validation {
-    def parseSize(size: String): Either[NonIntSize.type, Int] =
-      size.toIntOption.toRight(NonIntSize)
+    def parseSize(size: String): Either[NonIntSize.type, Int] = {
+        size.toIntOption.toRight(NonIntSize)
+    }
+
 
     def makeValidSize(size: Int): Option[ValidSize] = {
-        ValidSize.values.find(_.size == size)
+      println(s"Input Size :: $size")
+        val maybeSize = ValidSize.values.find( v => {
+          println(s"values :: $v")
+          v.size == size
+        }
+        )
+      println(s"maybeSize : $maybeSize")
+      maybeSize
     }
 
     def validateSize(size: Int): Either[PizzaError, ValidSize] =  makeValidSize(size) match{
@@ -32,16 +41,15 @@ object Validation {
     }
 
     def validatePizza[T](size: Int, sauce: String)(implicit sauceParser: SauceParser[T]): Either[NonEmptyList[PizzaError], Pizza[T]] = {
-        val eitherSizeOrError = validateSize(size) match {
-            case Right(size) => Right(size)
-            case Left(error) => correction(error)
-        }
-        val eitherSauceOrError = sauceParser(sauce)
+        val eitherSizeOrError: Either[PizzaError, ValidSize] = validateSize(size)
+
+        val eitherSauceOrError: Either[StrangeSauce.type, T] = sauceParser(sauce)
+
         (eitherSizeOrError, eitherSauceOrError) match {
-            case (Left(sizeError), Left(sauceError)) => Left(NonEmptyList(sizeError, List(sauceError)))
+            case (Left(sizeError: PizzaError), Left(sauceError)) => Left(NonEmptyList(sizeError, List(sauceError)))
             case (Left(sizeError), Right(_)) => Left(NonEmptyList(sizeError, Nil))
             case (Right(_), Left(sauceError)) => Left(NonEmptyList(sauceError, Nil))
-            case (Right(size), Right(sauce)) => Right(Pizza(size = size.size * 100, sauce = sauce))
+            case (Right(size), Right(sauce)) => Right(Pizza[T](size.size * 100, sauce)) // TODO: the constant 100 needs re-written
         }
     }
 }
