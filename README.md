@@ -614,3 +614,11 @@ Last week, we looked at implicits in depth, including the use of the `implicitly
  - 
  - Use the new `validateSize` and `correction` functions in the `validatePizza` function.
 
+
+## Typeclass instances
+
+Look at the `Validation.scala` file.
+ - Are there any typeclasses defined in the file?
+ - Does an `Either` have an `ApplicativeError` typeclass instance?
+ - What about `Option`?
+ - Can we define an `ApplicativeError` instance for `ValidSize`?
