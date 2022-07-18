@@ -91,7 +91,7 @@ object PizzaShop {
   }
 
   def main(args: Array[String]): Unit = {
-    val eitherSizeOrError = Validation.parseSize(args(0))
+    val eitherSizeOrError = Validation.parseSize(args(0)) // 50
     implicit val sauceParser = new SauceParser[ItalianSauce]{
       override def apply(sauce: String): Either[StrangeSauce.type, ItalianSauce] = validateSauce(sauce)
     }
