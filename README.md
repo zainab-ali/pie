@@ -622,3 +622,17 @@ Look at the `Validation.scala` file.
  - Does an `Either` have an `ApplicativeError` typeclass instance?
  - What about `Option`?
  - Can we define an `ApplicativeError` instance for `ValidSize`?
+
+## Type shapes
+
+We previously wrote the following code:
+
+```scala
+type TestType[T] = Either[String, T]
+val eitherMonadError: MonadError[TestType, String] = MonadError.apply(implicitly)
+```
+
+ - How does this show that `Either` has a `MonadError` typeclass instance?
+ - Does this show that `Either` has an `ApplicativeError` typeclass instance?
+ - Why do we need to define `TestType`?
+ - Instead of writing `MonadError.apply(implicitly)`, we could have written `MonadError[TestType, String]`. Why does this compile? 

@@ -1,8 +1,7 @@
 package pie.core
 
 import cats.data.NonEmptyList
-import pie.italy.{Bologna, Core, ItalianSauce, Napoli}
-import pie.italy.PizzaShop.{ItalianPizza, correction => italianCorrection, validateSize => italianValidateSize}
+import cats.{ApplicativeError, MonadError}
 import cats.implicits.*
 
 trait SauceParser[T] {
@@ -25,6 +24,10 @@ object Validation {
       println(s"maybeSize : $maybeSize")
       maybeSize
     }
+
+    type TestType[T] = Either[String, T]
+    val eitherMonadError: MonadError[TestType, String] = MonadError.apply(implicitly)
+    // val eitherMonadError: MonadError[TestType, String] = MonadError[TestType, String]
 
     def validateSize(size: Int): Either[PizzaError, ValidSize] =  makeValidSize(size) match{
         case Some(validSize) => Right(validSize)
