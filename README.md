@@ -636,3 +636,15 @@ val eitherMonadError: MonadError[TestType, String] = MonadError.apply(implicitly
  - Does this show that `Either` has an `ApplicativeError` typeclass instance?
  - Why do we need to define `TestType`?
  - Instead of writing `MonadError.apply(implicitly)`, we could have written `MonadError[TestType, String]`. Why does this compile? 
+
+## Type shapes and typeclasses
+
+`ApplicativeError` has the following signature: `ApplicativeError[F[_], E]`. Which of these types fit the bounds:
+
+ - `ApplicativeError[Either, ValidSize]`
+ - `ApplicativeError[Option, PizzaError]`
+   `ApplicativeError[ValidSize, PizzaError]`
+ - `ApplicativeError[fs2.Stream, PizzaError]`
+ - `ApplicativeError[IO, PizzaError]`
+
+Do any of them correspond to valid typeclass instances?
