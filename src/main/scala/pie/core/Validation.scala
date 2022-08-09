@@ -2,7 +2,8 @@ package pie.core
 
 import cats.data.NonEmptyList
 import cats.{ApplicativeError, MonadError}
-import cats.implicits.*
+import cats.implicits._
+import cats.effect.implicits._
 
 trait SauceParser[T] {
     def apply(sauce: String): Either[StrangeSauce.type, T]
@@ -25,9 +26,45 @@ object Validation {
       maybeSize
     }
 
+  /**
+   * ApplicativeError has the following signature: ApplicativeError[F[_], E]. Which of these types fit the bounds:
+    ApplicativeError[Either, ValidSize] // Does not compile
+    ApplicativeError[Option, PizzaError] // Compiles to success
+    ApplicativeError[ValidSize, PizzaError] // Does not compile
+    ApplicativeError[fs2.Stream, PizzaError] // Does not compile
+    ApplicativeError[IO, PizzaError] // Compiles to success
+   *
+   *
+   * @tparam T
+   */
+
+    type ApplicativeOption = ApplicativeError[Option, PizzaError]
+    //type ApplicativeValidSize = ApplicativeError[ValidSize, PizzaError]
+    //type ApplicaticeStream = ApplicativeError[fs2.Stream, PizzaError]
+    type applicativeIO = ApplicativeError[cats.effect.IO, PizzaError]
+
+    type Sarpong = Throwable
     type TestType[T] = Either[String, T]
     val eitherMonadError: MonadError[TestType, String] = MonadError.apply(implicitly)
     // val eitherMonadError: MonadError[TestType, String] = MonadError[TestType, String]
+//
+    type MyEither[T] = Either[PizzaError, T]
+    //But method catsStdInstancesForEither in trait EitherInstances does not match type cats.ApplicativeError[pie.core.Validation.MyEither, Throwable].
+
+
+  // RECAP:
+  // ApplicativeError compiles when F has one hole only
+  // The error E can only be Throwable (for IO!)
+  // The error E can be PizzaError for Either[PizzaError, T]
+  //  - It must be the left of the either
+  // The hole in F isn't filled with the error type, it's filled with the value type
+
+//    val imp = catsStdInstancesForEither[PizzaError]
+    val eitherApplicativeError = implicitly[ApplicativeError[MyEither, PizzaError]]
+    import cats.effect.IO
+    val ioApplicativeError = implicitly[ApplicativeError[IO, Sarpong]] // IO[Throwable]
+
+    val raiseString: IO[Boolean] = IO.raiseError(new Exception("BOOM!"))
 
     def validateSize(size: Int): Either[PizzaError, ValidSize] =  makeValidSize(size) match{
         case Some(validSize) => Right(validSize)
