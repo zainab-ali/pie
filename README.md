@@ -648,3 +648,20 @@ val eitherMonadError: MonadError[TestType, String] = MonadError.apply(implicitly
  - `ApplicativeError[IO, PizzaError]`
 
 Do any of them correspond to valid typeclass instances?
+
+## Using typeclass instances
+
+Validating a size gives us an `eitherSizeOrError` value of type `Either[PizzaError, ValidSize]`:
+
+```scala
+val eitherSizeOrError: Either[PizzaError, ValidSize] = validateSize(size)
+```
+
+The current code does not use the `correction` function:
+
+```
+def correction(error: PizzaError): Either[PizzaError, ValidSize] = ???
+```
+
+1. Call the `correction` function by pattern matching on `eitherSizeOrError`.
+2. Take a look at [`ApplicativeError`](https://typelevel.org/cats/api/cats/ApplicativeError.html). Are there any functions you could use instead?
