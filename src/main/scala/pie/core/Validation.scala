@@ -66,7 +66,7 @@ object Validation {
 
     val raiseString: IO[Boolean] = IO.raiseError(new Exception("BOOM!"))
 
-    def validateSize(size: Int): Either[PizzaError, ValidSize] =  makeValidSize(size) match{
+    def validateSize(size: Int): Either[PizzaError, ValidSize] = makeValidSize(size) match {
         case Some(validSize) => Right(validSize)
         case None =>
             if (size < 0) Left(NegativeSize)
@@ -81,7 +81,7 @@ object Validation {
     }
 
     def validatePizza[T](size: Int, sauce: String)(implicit sauceParser: SauceParser[T]): Either[NonEmptyList[PizzaError], Pizza[T]] = {
-        val eitherSizeOrError: Either[PizzaError, ValidSize] = validateSize(size)
+        val eitherSizeOrError: Either[PizzaError, ValidSize] = validateSize(size).handleErrorWith(correction)
 
         val eitherSauceOrError: Either[StrangeSauce.type, T] = sauceParser(sauce)
 

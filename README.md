@@ -665,3 +665,21 @@ def correction(error: PizzaError): Either[PizzaError, ValidSize] = ???
 
 1. Call the `correction` function by pattern matching on `eitherSizeOrError`.
 2. Take a look at [`ApplicativeError`](https://typelevel.org/cats/api/cats/ApplicativeError.html). Are there any functions you could use instead?
+
+# Using type parameters
+
+Take a look at the `validateSize` function in `Validation.scala`:
+
+```scala
+def validateSize(size: Int): Either[PizzaError, ValidSize] = makeValidSize(size) match {
+    case Some(validSize) => Right(validSize)
+    case None =>
+        if (size < 0) Left(NegativeSize)
+        else if (size < ValidSize.minSize) Left(PizzaTooSmall)
+        else Left(PizzaTooBig)
+}
+```
+
+1. Use the `ApplicativeError` instance for `MyEither` to replace the calls to `Right` and `Left` with functions provided by `ApplicativeError`.
+   As an example, `Left` can be replaced with `raiseError`.
+2. Can you add a type parameter and typeclass argument so that this function can be called using any effect?
