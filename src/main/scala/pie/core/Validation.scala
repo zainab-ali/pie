@@ -66,12 +66,16 @@ object Validation {
 
     val raiseString: IO[Boolean] = IO.raiseError(new Exception("BOOM!"))
 
-    def validateSize(size: Int): Either[PizzaError, ValidSize] = makeValidSize(size) match {
-        case Some(validSize) => Right(validSize)
+    def validateSize[F[_]](size: Int)(implicit ae: ApplicativeError[F, PizzaError]): F[ValidSize] = makeValidSize(size) match {
+        case Some(validSize) => validSize.pure[F]
         case None =>
-            if (size < 0) Left(NegativeSize)
-            else if (size < ValidSize.minSize) Left(PizzaTooSmall)
-            else Left(PizzaTooBig)
+            if (size < 0) {
+              NegativeSize.raiseError[F, ValidSize]
+              //(new cats.syntax.ApplicativeErrorIdOps[PizzaError](NegativeSize)).raiseError[MyEither, ValidSize](eitherApplicativeError)
+              //cats.syntax.applicativeError.catsSyntaxApplicativeErrorId(NegativeSize).raiseError[MyEither, ValidSize]
+            }
+            else if (size < ValidSize.minSize) PizzaTooSmall.raiseError[F, ValidSize]
+            else PizzaTooBig.raiseError[F, ValidSize]
     }
 
     def correction(error: PizzaError): Either[PizzaError, ValidSize] = error match {
@@ -81,7 +85,7 @@ object Validation {
     }
 
     def validatePizza[T](size: Int, sauce: String)(implicit sauceParser: SauceParser[T]): Either[NonEmptyList[PizzaError], Pizza[T]] = {
-        val eitherSizeOrError: Either[PizzaError, ValidSize] = validateSize(size).handleErrorWith(correction)
+        val eitherSizeOrError: Either[PizzaError, ValidSize] = validateSize[MyEither](size).handleErrorWith(correction)
 
         val eitherSauceOrError: Either[StrangeSauce.type, T] = sauceParser(sauce)
 

@@ -683,3 +683,23 @@ def validateSize(size: Int): Either[PizzaError, ValidSize] = makeValidSize(size)
 1. Use the `ApplicativeError` instance for `MyEither` to replace the calls to `Right` and `Left` with functions provided by `ApplicativeError`.
    As an example, `Left` can be replaced with `raiseError`.
 2. Can you add a type parameter and typeclass argument so that this function can be called using any effect?
+
+## Type parameters and typeclasses
+
+1. Parameterize the `correction` function by `F[_]`. 
+
+```scala
+def correction[F[_]](error: PizzaError)(???): F[ValidSize] = ???
+
+```
+
+2. Can you write the following function to "lift" an `Either` into any `F[_]` that has an `ApplicativeError` instance?
+
+```scala
+def fromEither[F[_], E, A](either: Either[E, A])(???): F[A] = either match {
+???
+}
+```
+
+4. Can you parameterize `validatePizza` by `F[_]` using the same pattern? If not, why?
+
