@@ -78,10 +78,10 @@ object Validation {
             else PizzaTooBig.raiseError[F, ValidSize]
     }
 
-    def correction(error: PizzaError): Either[PizzaError, ValidSize] = error match {
-      case PizzaTooSmall => Right(ValidSize.Three)
-      case PizzaTooBig => Right(ValidSize.Six)
-      case other => Left(other)
+    def correction[F[_]](error: PizzaError)(implicit ae: ApplicativeError[F, PizzaError]): F[ValidSize] = error match {
+      case PizzaTooSmall => ValidSize.Three.pure[F] //cats.syntax.applicative.catsSyntaxApplicativeId(ValidSize.Three).pure[F]
+      case PizzaTooBig => ValidSize.Six.pure[F]
+      case other => other.raiseError[F, ValidSize]
     }
 
     def validatePizza[T](size: Int, sauce: String)(implicit sauceParser: SauceParser[T]): Either[NonEmptyList[PizzaError], Pizza[T]] = {
