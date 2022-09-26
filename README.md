@@ -703,3 +703,20 @@ def fromEither[F[_], E, A](either: Either[E, A])(???): F[A] = either match {
 
 4. Can you parameterize `validatePizza` by `F[_]` using the same pattern? If not, why?
 
+
+## Type parameters and typeclasses (continued)
+
+
+Take a look at the `Validation.scala` file:
+
+1. Using `validateSize` and `correction` as examples, can you write the following function to "lift" an `Either` into any `F[_]` that has an `ApplicativeError` instance?
+
+```scala
+def fromEither[F[_], E, A](either: Either[E, A])(???): F[A] = either match {
+???
+}
+```
+
+2. Use this in `validatePizza` to lift the `eitherSauceOrError` into an effect.
+
+3. Can you parameterize `validatePizza` by `F[_]` using the same pattern?
