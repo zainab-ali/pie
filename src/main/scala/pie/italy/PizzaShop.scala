@@ -97,10 +97,11 @@ object PizzaShop {
     }
     // This solution uses only pattern matching.
     // If you like, experiment with using functions such as `flatMap`
-    val eitherPizzaOrError = eitherSizeOrError match {
+    val eitherPizzaOrError: Either[Object, Any] = eitherSizeOrError match {
       case Right(size) =>
         val sauce = args(1)
-        Validation.validatePizza(size, sauce)
+        val a: Either[PizzaError, Any] = Validation.validatePizza(size, sauce)
+        a
       case Left(error) =>
         Left(NonEmptyList(error, Nil))
     }
