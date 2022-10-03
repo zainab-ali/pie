@@ -84,16 +84,21 @@ object Validation {
       case other => other.raiseError[F, ValidSize]
     }
 
-    def validatePizza[T](size: Int, sauce: String)(implicit sauceParser: SauceParser[T]): Either[NonEmptyList[PizzaError], Pizza[T]] = {
-        val eitherSizeOrError: Either[PizzaError, ValidSize] = validateSize[MyEither](size).handleErrorWith(correction)
+    def validatePizza[F[_], T](size: Int, sauce: String)(implicit sauceParser: SauceParser[T], ae: ApplicativeError[F, PizzaError]): F[Pizza[T]] = {
 
-        val eitherSauceOrError: Either[StrangeSauce.type, T] = sauceParser(sauce)
+        val eitherSizeOrError: F[ValidSize] = validateSize[F](size).handleErrorWith(correction)
 
-        (eitherSizeOrError, eitherSauceOrError) match {
-            case (Left(sizeError: PizzaError), Left(sauceError)) => Left(NonEmptyList(sizeError, List(sauceError)))
-            case (Left(sizeError), Right(_)) => Left(NonEmptyList(sizeError, Nil))
-            case (Right(_), Left(sauceError)) => Left(NonEmptyList(sauceError, Nil))
-            case (Right(size), Right(sauce)) => Right(Pizza[T](size.size * 100, sauce)) // TODO: the constant 100 needs re-written
-        }
+        val eitherSauceOrError: F[T] = fromEither[F, PizzaError, T](sauceParser(sauce))
+
+
+
+
+      val result: F[Pizza[T]] = ae.map2(eitherSizeOrError, eitherSauceOrError)((validSize, sauce)=>  Pizza[T](validSize.size * 100, sauce))
+      result
+    }
+
+    def fromEither[F[_], E, A](either: Either[E, A])(implicit ae: ApplicativeError[F, E]): F[A] = either match {
+      case Right(value) => value.pure[F]
+      case Left(err) => err.raiseError[F, A]
     }
 }
