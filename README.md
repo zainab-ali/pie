@@ -720,3 +720,12 @@ def fromEither[F[_], E, A](either: Either[E, A])(???): F[A] = either match {
 2. Use this in `validatePizza` to lift the `eitherSauceOrError` into an effect.
 
 3. Can you parameterize `validatePizza` by `F[_]` using the same pattern?
+
+## Type classes with type parameters
+
+Take a look at the `SauceParser`. It's apply function returns an `Either[StrangeSauce.type, T]`.
+
+1. Can you refactor the `SauceParser` to return an `F[T]` instead, where `F[_]` has an `ApplicativeError[F, PizzaError]` by:
+  a. Parameterizing `SauceParser` by `F[_]`.
+  b. Parameterizing `apply` by `F[_]`.
+  What is the difference between either case?
