@@ -729,3 +729,21 @@ Take a look at the `SauceParser`. It's apply function returns an `Either[Strange
   a. Parameterizing `SauceParser` by `F[_]`.
   b. Parameterizing `apply` by `F[_]`.
   What is the difference between either case?
+
+## Type parameters, functions and traits
+
+Let's create a `Default` typeclass that provides a default value.
+
+Consider the following signatures of `Default`:
+
+```scala
+trait Default[A] {
+  val default: A
+}
+
+trait Default {
+  def default[A]: A
+}
+```
+
+Which signature is appropriate? Can you implement them both?
