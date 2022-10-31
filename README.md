@@ -747,3 +747,15 @@ trait Default {
 ```
 
 Which signature is appropriate? Can you implement them both?
+
+### Type parameters and quantification
+
+Write a `getOrDefault` function that takes an `Option[A]` and returns a default value of `A` in the case of `None`. 
+
+How does the following trait behave?
+
+```scala
+trait Default[A] {
+  def default[A]: A
+}
+```
