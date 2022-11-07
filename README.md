@@ -763,7 +763,7 @@ trait Default[A] {
 ### Universal quantification
 
 1. Implement the following functions in as many ways as you can:
-```
+```scala
 def default[A]: A = ???
 def mao[A](a: A): A = ???
 def maru[A](a1: A, a2: A): A = ???
