@@ -770,3 +770,15 @@ def maru[A](a1: A, a2: A): A = ???
 ```
 
 2. How does `def default[A]: A = ???` differ to the `trait Default[A]`?
+
+## Combining typeclasses
+
+Take a look at the `Validation.scala` file, in particular the `SauceParser`:
+
+```scala
+trait SauceParser[T] {
+    def apply(sauce: String): Either[StrangeSauce.type, T]
+}
+```
+
+How would you amend `SauceParser` to return a `F[T]`, where `F[_]` is an effect containing a `StrangeSauce.type`?
