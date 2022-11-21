@@ -782,3 +782,35 @@ trait SauceParser[T] {
 ```
 
 How would you amend `SauceParser` to return a `F[T]`, where `F[_]` is an effect containing a `StrangeSauce.type`?
+
+### Combining typeclasses continued
+
+Consider the following definitions of `SauceParser`:
+
+```scala
+// 1
+trait SauceParser[F[_], T] {
+    def apply(sauce: String): F[T]
+}
+// 2
+trait SauceParser[T] {
+    def apply[F[_]](sauce: String): F[T]
+}
+// 3
+trait SauceParser[F[_], T] {
+    def apply[F[_]](sauce: String): F[T]
+}
+// 4
+trait SauceParser[T] {
+    def apply[F[_]](sauce: String)(implicit ae: ApplicativeError[F, StrangeSauce.type]): F[T]
+}
+// 5
+trait SauceParser[F[_], T] {
+	val applicativeError: ApplicativeError[F, StrangeSauce.type]
+    def apply[F[_]](sauce: String): F[T]
+}
+```
+
+ - Which definitions are possible to create instances of?
+ - What is the difference between 1 and 2?
+ - What is the difference between 4 and 5?
