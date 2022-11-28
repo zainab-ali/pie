@@ -1,5 +1,9 @@
 package pie
 
+import cats.ApplicativeError
+import cats.effect.{IO, IOApp}
+import pie.core.{PizzaError, StrangeSauce}
+
 trait Default[A] {
   val default: A
   // TODO: Fill this in
@@ -75,4 +79,50 @@ object DefaultExperiment extends App {
 //  implicit val intClassName: ClassName = ClassName.getIntClassName()
 
  // println(s"The int classname is ${implicitly[ClassName]}")
+}
+
+object Test extends IOApp.Simple {
+  trait SauceParser[F[_], T] {
+    def mao(sauce: String): F[T]
+  }
+
+  // 2
+  trait SauceParserTwo[T] {
+    def apply[F[_]](sauce: String): F[T]
+  }
+
+  // 3
+  trait SauceParserThree[F[_], T] {
+    def apply[F[_]](sauce: String): F[T]
+  }
+
+  // 4
+  trait SauceParserFour[T] {
+    def apply[F[_]](sauce: String)(implicit ae: ApplicativeError[F, StrangeSauce.type]): F[T]
+  }
+
+  val sp = new SauceParser[IO, String] {
+    override def mao(sauce: String): IO[String] = IO.pure(sauce)
+  }
+
+//  val sp3 = new SauceParserThree[IO, String] {
+//    override def apply[F[_]](sauce: String): F[String] = IO.pure(sauce)
+//  }
+
+  val sp4 = new SauceParserFour[String] {
+    override def apply[F[_]](sauce: String)(implicit ae: ApplicativeError[F, StrangeSauce.type]): F[String] = ae.pure(sauce)
+  }
+
+//  val sp2 = new SauceParserTwo[String] {
+//    override def apply[F[_]](sauce: String): F[String] = ??? //Doesn't work
+//    def anotherMethod[A]: String = "???"
+//  }
+
+  import cats.implicits._
+  import cats.effect.implicits._
+
+  type AnotherEither[T] = Either[StrangeSauce.type, T]
+//  val eitherApplicativeError: ApplicativeError[IO, PizzaError] = implicitly[ApplicativeError[IO, PizzaError]]
+
+  override def run: IO[Unit] = sp4.apply[AnotherEither]("Something").liftTo[IO].void
 }
