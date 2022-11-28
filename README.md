@@ -814,3 +814,32 @@ trait SauceParser[F[_], T] {
  - Which definitions are possible to create instances of?
  - What is the difference between 1 and 2?
  - What is the difference between 4 and 5?
+ 
+### Typeclass usage
+
+Given the following typeclass:
+```scala
+trait SauceParser[F[_], A] {
+   def apply(sauce: String): F[A]
+}
+```
+
+Which of the following usages are valid?
+
+For each usage, identify:
+ - whether `def map` itself will compile
+ - whether a call to `mao` will compile
+
+```scala
+def mao[F[_], A](implicit parser: SauceParser[F, A]): List[A] = {
+   parser[List]("mao")
+}
+
+def mao[F[_], A](implicit parser: SauceParser[List, A]): List[ItalianSauce] = {
+   parser("mao")
+}
+
+def mao[F[_], A](implicit parser: SauceParser[List, A]): F[A] = {
+   parser("mao")
+}
+```
