@@ -843,3 +843,19 @@ def mao[F[_], A](implicit parser: SauceParser[List, A]): F[A] = {
    parser("mao")
 }
 ```
+
+### Combining typeclasses continued
+
+Consider refactoring `SauceParser` in `Validation.scala` to use `ApplicativeError`:
+
+```
+trait SauceParser[F[_], T] {
+	val applicativeError: ApplicativeError[F, StrangeSauce.type]
+    def apply[F[_]](sauce: String): F[T]
+}
+
+type MyEither[T] = Either[StrangeSauce.type, T]
+```
+
+1. Can you construct a `SauceParser` for `List`?
+2. Given a `SauceParser[MyEither, ItalianSauce]`, how can you use an `ApplicativeError[MyEither, ItalianSauce]`?
