@@ -5,8 +5,9 @@ import cats.{ApplicativeError, MonadError}
 import cats.implicits._
 import cats.effect.implicits._
 
-trait SauceParser[T] {
-    def apply(sauce: String): Either[StrangeSauce.type, T]
+trait SauceParser[F[_], T] {
+  //val applicativeError: ApplicativeError[F, StrangeSauce.type]
+    def apply(sauce: String): F[T]
 }
 
 object Validation {
@@ -84,14 +85,11 @@ object Validation {
       case other => other.raiseError[F, ValidSize]
     }
 
-    def validatePizza[F[_], T](size: Int, sauce: String)(implicit sauceParser: SauceParser[T], ae: ApplicativeError[F, PizzaError]): F[Pizza[T]] = {
+    def validatePizza[F[_], T](size: Int, sauce: String)(implicit sauceParser: SauceParser[F, T], ae: ApplicativeError[F, PizzaError]): F[Pizza[T]] = {
 
-        val eitherSizeOrError: F[ValidSize] = validateSize[F](size).handleErrorWith(correction)
+      val eitherSizeOrError: F[ValidSize] = validateSize[F](size).handleErrorWith(correction)
 
-        val eitherSauceOrError: F[T] = fromEither[F, PizzaError, T](sauceParser(sauce))
-
-
-
+      val eitherSauceOrError: F[T] = sauceParser(sauce)
 
       val result: F[Pizza[T]] = ae.map2(eitherSizeOrError, eitherSauceOrError)((validSize, sauce)=>  Pizza[T](validSize.size * 100, sauce))
       result

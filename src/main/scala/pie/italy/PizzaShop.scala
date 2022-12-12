@@ -1,5 +1,7 @@
 package pie.italy
 
+import cats.ApplicativeError
+import cats.Applicative
 import doodle.core.*
 import doodle.image.*
 import doodle.image.syntax.*
@@ -9,7 +11,7 @@ import pie.core.{Bechamel2, SauceToImage, Tomato2}
 import pie.*
 import pie.core.implicits.*
 import pie.core.Validation
-import pie.core.{Pizza => CorePizza, *}
+import pie.core.{Pizza as CorePizza, *}
 import pie.core.StrangeSauce
 
 
@@ -92,15 +94,17 @@ object PizzaShop {
 
   def main(args: Array[String]): Unit = {
     val eitherSizeOrError = Validation.parseSize(args(0)) // 50
-    implicit val sauceParser = new SauceParser[ItalianSauce]{
-      override def apply(sauce: String): Either[StrangeSauce.type, ItalianSauce] = validateSauce(sauce)
+    type MyEither[T] = Either[StrangeSauce.type, T] //TODO MyEither needs to have a type PizzaError
+    val test = implicitly[Applicative[MyEither]]
+    implicit val sauceParser = new SauceParser[MyEither, ItalianSauce]{
+      override def apply(sauce: String): MyEither[ItalianSauce] = validateSauce(sauce)
     }
     // This solution uses only pattern matching.
     // If you like, experiment with using functions such as `flatMap`
     val eitherPizzaOrError: Either[Object, Pizza] = eitherSizeOrError match {
       case Right(size) =>
         val sauce = args(1)
-        val a: Either[PizzaError, Pizza] = Validation.validatePizza(size, sauce)
+        val a: MyEither[Pizza] = Validation.validatePizza(size, sauce)(sauceParser, implicitly[ApplicativeError[MyEither, PizzaError]])
         a
       case Left(error) =>
         Left(NonEmptyList(error, Nil))
