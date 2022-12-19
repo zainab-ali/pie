@@ -859,3 +859,9 @@ type MyEither[T] = Either[StrangeSauce.type, T]
 
 1. Can you construct a `SauceParser` for `List`?
 2. Given a `SauceParser[MyEither, ItalianSauce]`, how can you use an `ApplicativeError[MyEither, ItalianSauce]`?
+
+# Typeclasses and data types
+
+ - Take a look at `Validation.validatePizza`. What value of `F[_]` is required for it to return an `Either[PizzaError, Pizza[T]]`?
+ - There are multiple scenarios in which `validatePizza` could return a `PizzaError`. If both the size and sauce are invalid, what error will be returned?
+ - If the size and sauce are invalid, we want to return both errors. Can this be represented with an `Either[PizzaError, Pizza[T]]`? If not, how could you represent it
