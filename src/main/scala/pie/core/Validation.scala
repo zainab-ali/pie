@@ -2,11 +2,12 @@ package pie.core
 
 import cats.data.NonEmptyList
 import cats.{ApplicativeError, MonadError}
-import cats.implicits._
-import cats.effect.implicits._
+import cats.implicits.*
+import cats.effect.implicits.*
 
+import scala.annotation.implicitNotFound
+@implicitNotFound("There's no implicit!")
 trait SauceParser[F[_], T] {
-  //val applicativeError: ApplicativeError[F, StrangeSauce.type]
     def apply(sauce: String): F[T]
 }
 

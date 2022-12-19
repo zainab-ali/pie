@@ -96,7 +96,18 @@ object PizzaShop {
     val eitherSizeOrError = Validation.parseSize(args(0)) // 50
     type MyEither[T] = Either[StrangeSauce.type, T] //TODO MyEither needs to have a type PizzaError
     val test = implicitly[Applicative[MyEither]]
-    implicit val sauceParser = new SauceParser[MyEither, ItalianSauce]{
+    val test5 = implicitly[ApplicativeError[MyEither, StrangeSauce.type]]
+    // val test3: ApplicativeError[MyEither, PizzaError] =  ??? //implicitly[ApplicativeError[MyEither, PizzaError]]
+    val test4: MyEither[Boolean] = test5.raiseError[Boolean](PizzaTooBig)
+
+    // val test6 = implicitly[cats.effect.Sync[IO]]
+    // test6.raiseError()
+    // Either[MyError, Mao]
+    // val popcorn: Either[MyError, Mao] = Left(MyError("here"))
+    //def someTest: F[String] = Sync[F].raiseError[String](new Throwable(""))
+
+    // val test2 = implicitly[SauceParser[List, ItalianSauce]]
+    implicit val sauceParser = new SauceParser[MyEither, ItalianSauce] {
       override def apply(sauce: String): MyEither[ItalianSauce] = validateSauce(sauce)
     }
     // This solution uses only pattern matching.
@@ -104,7 +115,11 @@ object PizzaShop {
     val eitherPizzaOrError: Either[Object, Pizza] = eitherSizeOrError match {
       case Right(size) =>
         val sauce = args(1)
-        val a: MyEither[Pizza] = Validation.validatePizza(size, sauce)(sauceParser, implicitly[ApplicativeError[MyEither, PizzaError]])
+        val a: MyEither[Pizza] = Validation.validatePizza(size, sauce)(
+        ???, ???
+         // sauceParser,
+        //  implicitly[ApplicativeError[MyEither, PizzaError]]
+        )
         a
       case Left(error) =>
         Left(NonEmptyList(error, Nil))
